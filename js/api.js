@@ -45,7 +45,40 @@ const api={
   return consultation;
  },
  async updateConsultation(id,x){const c=await mustData(db.from('consultations').update(x).eq('id',id).select().single());await this.log({client_id:c.client_id,consultation_id:c.id,event_type:'consultation_updated',description:`Status konsultasi: ${statusLabel(c.consultation_status)}`});return c},
- async listPayments(status=''){let q=db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name))').order('created_at',{ascending:false});if(status)q=q.eq('status',status);return mustData(q)},
+ async listPayments(status=''){
+  const [paymentRows,consultationRows]=await Promise.all([
+   mustData(db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name))').order('created_at',{ascending:false})),
+   mustData(db.from('consultations').select('id,consultation_no,client_id,service_name_snapshot,amount,payment_status,created_at,updated_at,clients(full_name)').gt('amount',0).order('created_at',{ascending:false}))
+  ]);
+
+  const linkedConsultationIds=new Set((paymentRows||[]).map(p=>p.consultation_id).filter(Boolean));
+  const synthetic=(consultationRows||[])
+   .filter(c=>!linkedConsultationIds.has(c.id))
+   .map(c=>({
+    id:`consultation-${c.id}`,
+    consultation_id:c.id,
+    invoice_no:c.consultation_no,
+    amount:Number(c.amount||0),
+    status:c.payment_status||'pending',
+    provider:'midtrans',
+    paid_at:c.payment_status==='paid'?(c.updated_at||c.created_at):null,
+    created_at:c.created_at,
+    updated_at:c.updated_at,
+    is_virtual:true,
+    consultations:{
+     consultation_no:c.consultation_no,
+     service_name_snapshot:c.service_name_snapshot,
+     client_id:c.client_id,
+     clients:c.clients
+    }
+   }));
+
+  let rows=[...(paymentRows||[]),...synthetic]
+   .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+
+  if(status)rows=rows.filter(p=>p.status===status);
+  return rows;
+ },
  async updatePayment(id,status){const p=await mustData(db.from('payments').update({status,paid_at:status==='paid'?new Date().toISOString():null}).eq('id',id).select('*,consultations(*)').single());if(p.consultation_id){await db.from('consultations').update({payment_status:status,consultation_status:status==='paid'?'waiting_schedule':status==='failed'?'waiting_payment':p.consultations.consultation_status}).eq('id',p.consultation_id)}await this.log({client_id:p.consultations?.client_id,consultation_id:p.consultation_id,payment_id:p.id,event_type:'payment_updated',description:`Pembayaran ${statusLabel(status)}`});return p},
  async saveConsultationResult(x){
   if(!x.clientId)throw new Error('Client belum dipilih.');
@@ -70,7 +103,40 @@ const api={
   }).select().single());
  },
  async listActivities(clientId=''){let q=db.from('activity_logs').select('*,clients(full_name)').order('created_at',{ascending:false});if(clientId)q=q.eq('client_id',clientId);return mustData(q)},
- async clientDetail(id){const [client,consultations,payments,activities]=await Promise.all([this.getClient(id),mustData(db.from('consultations').select('*').eq('client_id',id).order('created_at',{ascending:false})),mustData(db.from('payments').select('*,consultations!inner(client_id,service_name_snapshot)').eq('consultations.client_id',id).order('created_at',{ascending:false})),this.listActivities(id)]);return {client,consultations,payments,activities}},
+ async clientDetail(id){
+  const [client,consultations,paymentRows,activities]=await Promise.all([
+   this.getClient(id),
+   mustData(db.from('consultations').select('*').eq('client_id',id).order('created_at',{ascending:false})),
+   mustData(db.from('payments').select('*,consultations!inner(client_id,consultation_no,service_name_snapshot)').eq('consultations.client_id',id).order('created_at',{ascending:false})),
+   this.listActivities(id)
+  ]);
+
+  const linkedConsultationIds=new Set((paymentRows||[]).map(p=>p.consultation_id).filter(Boolean));
+  const synthetic=(consultations||[])
+   .filter(c=>Number(c.amount||0)>0&&!linkedConsultationIds.has(c.id))
+   .map(c=>({
+    id:`consultation-${c.id}`,
+    consultation_id:c.id,
+    invoice_no:c.consultation_no,
+    amount:Number(c.amount||0),
+    status:c.payment_status||'pending',
+    provider:'midtrans',
+    paid_at:c.payment_status==='paid'?(c.updated_at||c.created_at):null,
+    created_at:c.created_at,
+    updated_at:c.updated_at,
+    is_virtual:true,
+    consultations:{
+     client_id:c.client_id,
+     consultation_no:c.consultation_no,
+     service_name_snapshot:c.service_name_snapshot
+    }
+   }));
+
+  const payments=[...(paymentRows||[]),...synthetic]
+   .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+
+  return {client,consultations,payments,activities};
+ },
  async log(row){const {error}=await db.from('activity_logs').insert(row);if(error)console.warn('Activity log gagal:',error.message)},
  async saveProfile(x){const {data:{user}}=await db.auth.getUser();if(!user)throw new Error('Sesi login tidak ditemukan.');return mustData(db.from('admin_profiles').update({full_name:x.name}).eq('user_id',user.id).select().single())}
 };
