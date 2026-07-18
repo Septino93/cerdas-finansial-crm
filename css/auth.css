@@ -1,0 +1,17 @@
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:linear-gradient(150deg,#e8f2fb,#d5e6f6);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#102a43}
+.auth-shell{width:100%;max-width:430px;min-height:100vh;background:#f6f9fc;display:flex;align-items:center;padding:28px}
+.auth-card{width:100%;background:#fff;border-radius:30px;padding:28px;box-shadow:0 18px 45px rgba(15,44,89,.14)}
+.logo-circle{width:72px;height:72px;border-radius:24px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0b3c5d,#1976d2);color:#fff;font-size:24px;font-weight:900}
+.auth-card h1{text-align:center;margin:0;color:#0b3c5d}
+.subtitle{text-align:center;color:#627d98;line-height:1.5;margin:8px 0 22px}
+.auth-card label{display:block;font-weight:800;font-size:13px;margin:14px 0 7px;color:#334e68}
+.auth-card input{width:100%;border:1px solid #d9e2ec;border-radius:15px;padding:14px;background:#f8fbff;outline:none}
+.primary-btn,.social-btn{width:100%;border:none;border-radius:16px;padding:14px;font-weight:900;margin-top:12px}
+.primary-btn{background:linear-gradient(135deg,#0b3c5d,#1976d2);color:#fff}
+.social-btn{background:#eef6ff;color:#0b3c5d}
+.divider{text-align:center;color:#9fb3c8;margin:18px 0}
+.auth-links{text-align:center;margin-top:18px;font-size:13px}
+.auth-links a{color:#1976d2;text-decoration:none;font-weight:800}
+
+.auth-logo{display:block;width:190px;max-height:130px;object-fit:contain;margin:0 auto 18px}
