@@ -1,4 +1,15 @@
 let analysisClientId = "";
+let selectedAnalysisModule = "";
+
+const MODULE_LABEL_MAP = {
+  "dana-pendidikan": "Dana Pendidikan",
+  "review-polis": "Review Polis",
+  "up-jiwa": "UP Jiwa",
+  "penyakit-kritis": "Penyakit Kritis",
+  "kesehatan": "Kesehatan",
+  "dana-darurat": "Dana Darurat",
+  "dana-pensiun": "Dana Pensiun"
+};
 
 const MODULE_SERVICE_MAP = {
   "dana-pendidikan": "education",
@@ -53,10 +64,42 @@ function recommendModule(slug) {
   card.querySelector("div")?.appendChild(badge);
 }
 
+function selectModule(module) {
+  document.querySelectorAll(".analysis-module").forEach(card => {
+    card.classList.remove("selected");
+    card.removeAttribute("aria-current");
+    card.querySelector(".module-selected")?.remove();
+  });
+
+  const panel = document.getElementById("selectedModulePanel");
+  if (!module || !MODULE_LABEL_MAP[module]) {
+    if (panel) panel.hidden = true;
+    return;
+  }
+
+  const card = document.querySelector(`.analysis-module[data-module="${module}"]`);
+  if (!card) return;
+
+  card.classList.add("selected");
+  card.setAttribute("aria-current", "page");
+
+  const badge = document.createElement("span");
+  badge.className = "module-selected";
+  badge.textContent = "Dipilih";
+  card.querySelector("div")?.appendChild(badge);
+
+  if (panel) {
+    panel.hidden = false;
+    document.getElementById("selectedModuleName").textContent = MODULE_LABEL_MAP[module];
+  }
+}
+
 async function initAnalysis() {
   if (!(await protectPage())) return;
 
-  analysisClientId = new URLSearchParams(location.search).get("client_id") || "";
+  const params = new URLSearchParams(location.search);
+  analysisClientId = params.get("client_id") || "";
+  selectedAnalysisModule = params.get("module") || "";
   const picker = document.getElementById("analysisClientPicker");
 
   try {
@@ -122,6 +165,9 @@ async function initAnalysis() {
         '<div class="empty">Client ini belum memiliki hasil simulasi dari Website Personal. Pendaftaran biasa tetap tersimpan dengan normal.</div>';
       recommendModule(consultation?.services?.slug || "");
     }
+
+    // Rekomendasi hanya memberi penanda hijau. Modul yang diklik tetap menjadi pilihan aktif.
+    selectModule(selectedAnalysisModule);
 
     document.querySelectorAll(".analysis-module").forEach(card => {
       const module = card.dataset.module;

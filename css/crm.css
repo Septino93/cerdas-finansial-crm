@@ -47,3 +47,15 @@
 .module-recommendation{display:inline-block!important;width:max-content;margin-top:6px;padding:3px 7px;border-radius:999px;background:#e5f7ed;color:#16884f!important;font-size:9px!important;font-weight:900}
 .start-analysis-button{display:grid;grid-template-columns:46px 1fr 24px;align-items:center;gap:12px;padding:15px 16px;border-radius:20px;background:linear-gradient(135deg,#0b4d78,#1976d2);color:#fff;text-decoration:none;box-shadow:0 14px 30px rgba(18,92,154,.22)}
 .start-analysis-button>span{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.16)}.start-analysis-button strong,.start-analysis-button small{display:block}.start-analysis-button small{opacity:.75;margin-top:3px}
+
+/* Fix navigasi modul analisis: rekomendasi dan pilihan aktif dipisahkan */
+.analysis-module.selected{outline:2px solid #1976d2;box-shadow:0 12px 30px rgba(25,118,210,.18);background:#f8fbff}
+.analysis-module.selected.recommended{outline:2px solid #1976d2}
+.module-selected{display:inline-block!important;width:max-content;margin-top:6px;padding:3px 7px;border-radius:999px;background:#e7f1ff;color:#1976d2!important;font-size:9px!important;font-weight:900}
+.selected-module-panel{display:flex;align-items:flex-start;gap:12px;padding:15px 16px;margin:0 0 18px;background:#eef6ff;border:1px solid #cfe4fb;border-radius:19px}
+.selected-module-panel[hidden]{display:none}
+.selected-module-icon{width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;border-radius:13px;background:#fff;color:#1976d2}
+.selected-module-icon svg{width:20px;height:20px}
+.selected-module-panel small{display:block;color:#6d88a4;font-size:9px;font-weight:900;letter-spacing:.12em}
+.selected-module-panel strong{display:block;margin-top:3px;color:#0b3c5d;font-size:15px}
+.selected-module-panel p{margin:4px 0 0;color:#667085;font-size:10.5px;line-height:1.45}
