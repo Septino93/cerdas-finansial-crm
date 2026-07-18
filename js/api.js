@@ -47,6 +47,28 @@ const api={
  async updateConsultation(id,x){const c=await mustData(db.from('consultations').update(x).eq('id',id).select().single());await this.log({client_id:c.client_id,consultation_id:c.id,event_type:'consultation_updated',description:`Status konsultasi: ${statusLabel(c.consultation_status)}`});return c},
  async listPayments(status=''){let q=db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name))').order('created_at',{ascending:false});if(status)q=q.eq('status',status);return mustData(q)},
  async updatePayment(id,status){const p=await mustData(db.from('payments').update({status,paid_at:status==='paid'?new Date().toISOString():null}).eq('id',id).select('*,consultations(*)').single());if(p.consultation_id){await db.from('consultations').update({payment_status:status,consultation_status:status==='paid'?'waiting_schedule':status==='failed'?'waiting_payment':p.consultations.consultation_status}).eq('id',p.consultation_id)}await this.log({client_id:p.consultations?.client_id,consultation_id:p.consultation_id,payment_id:p.id,event_type:'payment_updated',description:`Pembayaran ${statusLabel(status)}`});return p},
+ async saveConsultationResult(x){
+  if(!x.clientId)throw new Error('Client belum dipilih.');
+  if(!Array.isArray(x.topics)||!x.topics.length)throw new Error('Pilih minimal satu topik yang dikerjakan.');
+  if(x.consultationId){
+   await mustData(db.from('consultations').update({consultation_status:'completed'}).eq('id',x.consultationId).select().single());
+  }
+  const description=`Hasil konsultasi disimpan ke CRM: ${x.topics.join(', ')}`;
+  return mustData(db.from('activity_logs').insert({
+   client_id:x.clientId,
+   consultation_id:x.consultationId||null,
+   event_type:'consultation_result_uploaded',
+   description,
+   metadata:{
+    source:'analysis_workspace',
+    consultation_date:x.consultationDate,
+    topics:x.topics,
+    recommendation:x.recommendation||'',
+    notes:x.notes||'',
+    follow_up_date:x.followUpDate||null
+   }
+  }).select().single());
+ },
  async listActivities(clientId=''){let q=db.from('activity_logs').select('*,clients(full_name)').order('created_at',{ascending:false});if(clientId)q=q.eq('client_id',clientId);return mustData(q)},
  async clientDetail(id){const [client,consultations,payments,activities]=await Promise.all([this.getClient(id),mustData(db.from('consultations').select('*').eq('client_id',id).order('created_at',{ascending:false})),mustData(db.from('payments').select('*,consultations!inner(client_id,service_name_snapshot)').eq('consultations.client_id',id).order('created_at',{ascending:false})),this.listActivities(id)]);return {client,consultations,payments,activities}},
  async log(row){const {error}=await db.from('activity_logs').insert(row);if(error)console.warn('Activity log gagal:',error.message)},

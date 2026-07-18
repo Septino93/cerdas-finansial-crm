@@ -114,7 +114,9 @@ async function initAnalysis() {
     const data = await api.clientDetail(analysisClientId);
     const client = data.client;
     const consultation = data.consultations?.[0] || null;
+    activeConsultationId = consultation?.id || "";
     const simulation = latestSimulation(data.activities);
+    renderLatestConsultationResult(latestConsultationResult(data.activities));
 
     document.getElementById("analysisEmptyState").hidden = true;
     document.getElementById("analysisWorkspace").hidden = false;
@@ -164,3 +166,106 @@ async function initAnalysis() {
 }
 
 document.addEventListener("DOMContentLoaded", initAnalysis);
+
+const RESULT_TOPIC_BY_MODULE = {
+  "dana-pendidikan": "Dana Pendidikan",
+  "review-polis": "Review Polis",
+  "up-jiwa": "UP Jiwa",
+  "penyakit-kritis": "Penyakit Kritis",
+  "kesehatan": "Kesehatan",
+  "dana-darurat": "Dana Darurat",
+  "dana-pensiun": "Dana Pensiun"
+};
+
+let activeConsultationId = "";
+
+function isoToday() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10);
+}
+
+function openResultModal() {
+  if (!analysisClientId) return alert("Pilih client terlebih dahulu.");
+  document.getElementById("consultationResultModal").hidden = false;
+  document.body.style.overflow = "hidden";
+  const selectedModule = new URLSearchParams(location.search).get("module");
+  const selectedTopic = RESULT_TOPIC_BY_MODULE[selectedModule];
+  if (selectedTopic) {
+    const box = [...document.querySelectorAll('input[name="resultTopic"]')]
+      .find(input => input.value === selectedTopic);
+    if (box) box.checked = true;
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeResultModal() {
+  document.getElementById("consultationResultModal").hidden = true;
+  document.body.style.overflow = "";
+}
+
+function latestConsultationResult(activities) {
+  return (activities || []).find(item => item?.event_type === "consultation_result_uploaded") || null;
+}
+
+function renderLatestConsultationResult(result) {
+  const card = document.getElementById("latestConsultationResult");
+  if (!result) {
+    card.hidden = true;
+    return;
+  }
+  const meta = result.metadata || {};
+  const topics = Array.isArray(meta.topics) ? meta.topics.join(", ") : "-";
+  card.hidden = false;
+  card.innerHTML = `
+    <small>HASIL TERAKHIR TERSIMPAN</small>
+    <h3>Konsultasi sudah masuk CRM</h3>
+    <div class="crm-result-line"><span>Tanggal</span><strong>${esc(meta.consultation_date || "-")}</strong></div>
+    <div class="crm-result-line"><span>Topik</span><strong>${esc(topics)}</strong></div>
+    <div class="crm-result-line"><span>Follow-up</span><strong>${esc(meta.follow_up_date || "Belum ditentukan")}</strong></div>
+    ${meta.recommendation ? `<div class="crm-result-text"><strong>Premi / Rekomendasi</strong><br>${esc(meta.recommendation)}</div>` : ""}
+    ${meta.notes ? `<div class="crm-result-text"><strong>Catatan</strong><br>${esc(meta.notes)}</div>` : ""}
+  `;
+}
+
+async function submitConsultationResult(event) {
+  event.preventDefault();
+  const topics = [...document.querySelectorAll('input[name="resultTopic"]:checked')].map(input => input.value);
+  if (!topics.length) return alert("Pilih minimal satu topik yang dikerjakan.");
+
+  const button = document.getElementById("saveConsultationResult");
+  button.disabled = true;
+  button.innerHTML = "Menyimpan...";
+
+  try {
+    const result = await api.saveConsultationResult({
+      clientId: analysisClientId,
+      consultationId: activeConsultationId,
+      consultationDate: document.getElementById("resultConsultationDate").value,
+      topics,
+      recommendation: document.getElementById("resultRecommendation").value.trim(),
+      notes: document.getElementById("resultNotes").value.trim(),
+      followUpDate: document.getElementById("resultFollowUpDate").value || null
+    });
+    renderLatestConsultationResult(result);
+    document.getElementById("activeStatus").textContent = "Konsultasi Selesai";
+    closeResultModal();
+    alert("Hasil konsultasi berhasil disimpan ke CRM.");
+  } catch (error) {
+    alert("Gagal menyimpan hasil konsultasi: " + error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = '<i data-lucide="cloud-upload"></i> Simpan ke CRM';
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function initConsultationResultControls() {
+  const dateInput = document.getElementById("resultConsultationDate");
+  if (dateInput && !dateInput.value) dateInput.value = isoToday();
+  document.getElementById("openConsultationResult")?.addEventListener("click", openResultModal);
+  document.querySelectorAll("[data-close-result-modal]").forEach(el => el.addEventListener("click", closeResultModal));
+  document.getElementById("consultationResultForm")?.addEventListener("submit", submitConsultationResult);
+}
+
+document.addEventListener("DOMContentLoaded", initConsultationResultControls);
