@@ -45,6 +45,25 @@ const api={
   return consultation;
  },
  async updateConsultation(id,x){const c=await mustData(db.from('consultations').update(x).eq('id',id).select().single());await this.log({client_id:c.client_id,consultation_id:c.id,event_type:'consultation_updated',description:`Status konsultasi: ${statusLabel(c.consultation_status)}`});return c},
+ async scheduleConsultation(id,x){
+  const scheduledAt=new Date(`${x.date}T${x.time}:00`).toISOString();
+  const payload={
+   scheduled_at:scheduledAt,
+   meeting_method:x.method,
+   meeting_link:x.link||null,
+   admin_notes:x.notes||null,
+   consultation_status:'confirmed'
+  };
+  const c=await mustData(db.from('consultations').update(payload).eq('id',id).select('*,clients(full_name,whatsapp,email)').single());
+  await this.log({
+   client_id:c.client_id,
+   consultation_id:c.id,
+   event_type:'consultation_scheduled',
+   description:`Jadwal konsultasi dikonfirmasi: ${fmtDate(c.scheduled_at)}`,
+   metadata:{meeting_method:c.meeting_method,meeting_link:c.meeting_link||null}
+  });
+  return c;
+ },
  async listPayments(status=''){
   const [paymentRows,consultationRows]=await Promise.all([
    mustData(db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name))').order('created_at',{ascending:false})),

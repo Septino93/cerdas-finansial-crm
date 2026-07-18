@@ -62,3 +62,10 @@
 .crm-result-form label{display:block;margin:13px 0 7px;color:#334e68;font-size:11px;font-weight:900}.crm-result-form label span{font-weight:500;color:#8293a4}.crm-result-form>input,.crm-result-form>textarea{width:100%;border:1px solid #d9e3ec;border-radius:14px;padding:12px 13px;background:#fff;color:#243043;outline:none;font:inherit;font-size:13px}.crm-result-form>textarea{min-height:85px;resize:vertical}.crm-result-form>input:focus,.crm-result-form>textarea:focus{border-color:#1976d2;box-shadow:0 0 0 4px rgba(25,118,210,.1)}
 .crm-topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.crm-topic-grid label{display:flex;align-items:center;gap:7px;margin:0;padding:10px;border:1px solid #dce7f1;border-radius:13px;background:#fff;font-size:10px}.crm-topic-grid input{accent-color:#1976d2}
 .crm-result-submit{width:100%;margin-top:17px;border:0;border-radius:15px;padding:13px 15px;background:#1976d2;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px}.crm-result-submit:disabled{opacity:.6}.crm-result-submit svg{width:18px}
+
+.schedule-summary{display:flex;flex-direction:column;gap:4px;background:#eaf3ff;border:1px solid #d4e5fb;border-radius:18px;padding:15px;margin-bottom:14px;color:#173d67}
+.schedule-summary strong{font-size:17px}.schedule-summary span{font-weight:700}.schedule-summary small{color:#667b91}
+.schedule-form input,.schedule-form select,.schedule-form textarea{width:100%;box-sizing:border-box}
+.schedule-preview{margin:12px 0;padding:12px 14px;border-radius:15px;background:#eef9f2;border:1px solid #d5efdf;display:flex;flex-direction:column;gap:3px;color:#24613d}
+.schedule-preview span{font-size:13px;font-weight:800}.schedule-preview small{overflow-wrap:anywhere}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
