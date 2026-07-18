@@ -255,7 +255,7 @@ async function submitConsultationResult(event) {
     alert("Gagal menyimpan hasil konsultasi: " + error.message);
   } finally {
     button.disabled = false;
-    button.innerHTML = '<i data-lucide="cloud-upload"></i> Simpan ke CRM';
+    button.innerHTML = '<i data-lucide="cloud-upload"></i> Simpan Hasil Meeting';
     if (window.lucide) lucide.createIcons();
   }
 }
