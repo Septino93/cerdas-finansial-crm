@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Analisis - Cerdas Finansial</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<main class="mobile-app">
+  <header class="analysis-hero">
+    <div class="page-titlebar analysis-titlebar">
+      <a class="icon-back icon-back-light" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a>
+      <div><span class="analysis-eyebrow">CERDAS FINANSIAL</span><h1>Analisis</h1></div>
+      <span class="title-spacer" aria-hidden="true"></span>
+    </div>
+    <p>Pilih modul perencanaan dan analisis keuangan untuk client.</p>
+  </header>
+
+  <section class="analysis-content">
+    <article class="analysis-intro-card">
+      <div class="analysis-intro-icon"><i data-lucide="sparkles"></i></div>
+      <div><strong>Pusat Analisis Client</strong><span>Seluruh modul akan menggunakan data client yang sama agar tidak perlu input berulang.</span></div>
+    </article>
+
+    <div class="analysis-section-head">
+      <div><span>MODUL UTAMA</span><h2>Perencanaan Keuangan</h2></div>
+    </div>
+
+    <div class="analysis-grid">
+      <a class="analysis-module education" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="graduation-cap"></i></span>
+        <div><strong>Dana Pendidikan</strong><small>Hitung kebutuhan dan target dana pendidikan.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module review" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="file-search-2"></i></span>
+        <div><strong>Review Polis</strong><small>Evaluasi perlindungan dan kebutuhan keluarga.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module life" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="heart-handshake"></i></span>
+        <div><strong>UP Jiwa</strong><small>Analisis kebutuhan uang pertanggungan jiwa.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module critical" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="activity"></i></span>
+        <div><strong>Penyakit Kritis</strong><small>Hitung dana pengganti penghasilan saat kritis.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module health" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="hospital"></i></span>
+        <div><strong>Kesehatan</strong><small>Rancang kebutuhan proteksi biaya perawatan.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module emergency" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="shield-alert"></i></span>
+        <div><strong>Dana Darurat</strong><small>Hitung target dana darurat sesuai profil client.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+      <a class="analysis-module retirement" href="clients.html">
+        <span class="analysis-module-icon"><i data-lucide="palmtree"></i></span>
+        <div><strong>Dana Pensiun</strong><small>Proyeksi kebutuhan dan kekurangan dana pensiun.</small></div>
+        <i class="analysis-arrow" data-lucide="chevron-right"></i>
+      </a>
+    </div>
+
+    <p class="analysis-note"><i data-lucide="info"></i><span>Pilih client terlebih dahulu sebelum membuka modul analisis. Modul akan dikembangkan bertahap tanpa mengubah database yang sudah stabil.</span></p>
+  </section>
+
+  <nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js?v=supa1"></script>
+<script src="../js/supabase-client.js?v=supa1"></script>
+<script src="../js/api.js?v=supa1"></script>
+<script src="../js/auth.js?v=supa1"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelector('[data-nav="analysis"]')?.classList.add('active');
+  if(window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>

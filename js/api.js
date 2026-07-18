@@ -9,15 +9,16 @@ async function mustData(promise){const {data,error,count}=await promise;if(error
 const api={
  async adminProfile(){return mustData(db.from('admin_profiles').select('*').single())},
  async dashboard(){
-  const [clients,consultations,payments,recentC,recentClients,profile]=await Promise.all([
+  const [clients,consultations,payments,recentC,recentClients,recentActivities,profile]=await Promise.all([
    mustData(db.from('clients').select('*',{count:'exact',head:true})),
-   mustData(db.from('consultations').select('consultation_status,payment_status')),
-   mustData(db.from('payments').select('amount,status')),
-   mustData(db.from('consultations').select('id,consultation_no,service_name_snapshot,consultation_status,payment_status,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(4)),
-   mustData(db.from('clients').select('*').order('created_at',{ascending:false}).limit(4)),
+   mustData(db.from('consultations').select('id,consultation_status,payment_status,scheduled_at,created_at,updated_at')),
+   mustData(db.from('payments').select('id,amount,status,paid_at,created_at,updated_at')),
+   mustData(db.from('consultations').select('id,consultation_no,service_name_snapshot,consultation_status,payment_status,scheduled_at,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(5)),
+   mustData(db.from('clients').select('*').order('created_at',{ascending:false}).limit(5)),
+   mustData(db.from('activity_logs').select('id,event_type,description,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(5)),
    db.from('admin_profiles').select('*').maybeSingle().then(({data})=>data)
   ]);
-  return {clientCount:clients.count||0,consultations,payments,recentConsultations:recentC,recentClients,profile};
+  return {clientCount:clients.count||0,consultations,payments,recentConsultations:recentC,recentClients,recentActivities,profile};
  },
  async listClients(search=''){
   let q=db.from('clients').select('*').order('created_at',{ascending:false});

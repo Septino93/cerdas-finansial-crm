@@ -1,1 +1,79 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard - Cerdas Finansial</title><link rel="stylesheet" href="../css/app.css"><link rel="stylesheet" href="../css/crm.css"><script src="https://unpkg.com/lucide@latest"></script></head><body><main class="mobile-app"><header class="hero"><div class="hero-row"><div><small>BACK OFFICE</small><h1 id="adminName">Septino</h1></div><div class="hero-avatar">S</div></div><p>Kelola client, konsultasi, consultation credit, dan pembayaran dari satu dashboard pribadi.</p></header><div class="content"><section class="stats"><article class="stat"><div class="icon"><i data-lucide="users"></i></div><strong id="statClients">0</strong><span>Total Client</span></article><article class="stat"><div class="icon"><i data-lucide="calendar-check"></i></div><strong id="statBookings">0</strong><span>Konsultasi Pending</span></article><article class="stat"><div class="icon"><i data-lucide="wallet-cards"></i></div><strong id="statPayments">0</strong><span>Menunggu Pembayaran</span></article><article class="stat"><div class="icon"><i data-lucide="circle-dollar-sign"></i></div><strong id="statRevenue">Rp0</strong><span>Pendapatan Lunas</span></article></section><section class="section"><div class="section-head"><h2>Aksi Cepat</h2></div><div class="quick-grid"><a class="quick" href="clients.html"><i data-lucide="user-plus"></i><strong>Tambah Client</strong><small>Kelola data dan credit.</small></a><a class="quick" href="bookings.html"><i data-lucide="calendar-plus"></i><strong>Konsultasi</strong><small>Lihat permintaan masuk.</small></a><a class="quick" href="payments.html"><i data-lucide="badge-dollar-sign"></i><strong>Pembayaran</strong><small>Pantau Midtrans.</small></a><a class="quick" href="history.html"><i data-lucide="history"></i><strong>Aktivitas</strong><small>Aktivitas seluruh client.</small></a></div></section><section class="section"><div class="section-head"><h2>Konsultasi Terbaru</h2><a href="bookings.html">Semua</a></div><div class="card" id="recentBookings"></div></section><section class="section"><div class="section-head"><h2>Client Terbaru</h2><a href="clients.html">Semua</a></div><div class="card" id="recentClients"></div></section></div><nav class="bottom-nav"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Pembayaran</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=supa1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/dashboard.js?v=crm1"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="dashboard"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b3c5d">
+  <title>Dashboard - Cerdas Finansial</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="mobile-app dashboard-v2">
+    <header class="hero dashboard-v2-hero">
+      <div class="hero-row">
+        <div>
+          <small id="dashboardDate">HARI INI</small>
+          <h1>Halo, <span id="adminName">Septino</span></h1>
+        </div>
+        <div class="hero-actions">
+          <button class="hero-icon-btn" id="refreshDashboard" type="button" aria-label="Refresh dashboard" title="Refresh dashboard"><i data-lucide="refresh-cw"></i></button>
+          <a class="hero-avatar" href="profile.html" aria-label="Buka profil"><span id="adminInitial">S</span></a>
+        </div>
+      </div>
+      <p id="dashboardGreeting">Berikut pekerjaan yang perlu Anda perhatikan.</p>
+      <div class="dashboard-updated"><i data-lucide="clock-3"></i><span id="lastUpdated">Memuat data...</span></div>
+    </header>
+
+    <div class="content dashboard-v2-content">
+      <section class="dashboard-v2-stats" aria-label="Ringkasan dashboard">
+        <a class="metric-card" href="clients.html"><span class="metric-icon blue"><i data-lucide="users"></i></span><span><small>CLIENT</small><strong id="statClients">0</strong></span></a>
+        <a class="metric-card" href="bookings.html"><span class="metric-icon green"><i data-lucide="calendar-check-2"></i></span><span><small>HARI INI</small><strong id="statToday">0</strong></span></a>
+        <a class="metric-card" href="payments.html"><span class="metric-icon orange"><i data-lucide="hourglass"></i></span><span><small>PENDING</small><strong id="statPayments">0</strong></span></a>
+        <a class="metric-card" href="payments.html"><span class="metric-icon purple"><i data-lucide="circle-dollar-sign"></i></span><span><small>REVENUE</small><strong id="statRevenue">Rp0</strong></span></a>
+      </section>
+
+      <section class="dashboard-v2-alert" id="attentionPanel" hidden>
+        <span class="attention-icon"><i data-lucide="bell-ring"></i></span>
+        <div><small>PERLU DITINDAKLANJUTI</small><strong id="attentionText">Ada pekerjaan yang menunggu.</strong></div>
+        <a href="bookings.html"><i data-lucide="chevron-right"></i></a>
+      </section>
+
+      <section class="section dashboard-v2-section">
+        <div class="section-head compact-head"><div><span class="section-eyebrow">AGENDA</span><h2>Hari ini</h2></div><a href="bookings.html">Semua</a></div>
+        <div class="agenda-list" id="todayAgenda"><div class="dashboard-loading">Memuat agenda...</div></div>
+      </section>
+
+      <section class="section dashboard-v2-section">
+        <div class="section-head compact-head"><div><span class="section-eyebrow">STATUS</span><h2>Alur konsultasi</h2></div><a href="bookings.html">Semua</a></div>
+        <div class="compact-status-grid" id="statusSummary"></div>
+      </section>
+
+      <section class="section dashboard-v2-section">
+        <div class="section-head compact-head"><div><span class="section-eyebrow">TERBARU</span><h2>Aktivitas</h2></div><a href="history.html">Semua</a></div>
+        <div class="card dashboard-list compact-activity" id="recentActivities"><div class="dashboard-loading">Memuat aktivitas...</div></div>
+      </section>
+
+      <section class="section dashboard-v2-section">
+        <div class="section-head compact-head"><div><span class="section-eyebrow">AKSI CEPAT</span><h2>Mulai pekerjaan</h2></div></div>
+        <div class="dashboard-v2-actions">
+          <a href="clients.html"><span><i data-lucide="user-plus"></i></span><strong>Client</strong></a>
+          <a href="bookings.html"><span><i data-lucide="calendar-plus"></i></span><strong>Konsultasi</strong></a>
+          <a href="payments.html"><span><i data-lucide="wallet-cards"></i></span><strong>Pembayaran</strong></a>
+        </div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js?v=supa1"></script>
+  <script src="../js/supabase-client.js?v=supa1"></script>
+  <script src="../js/api.js?v=crm-dashboard-v2"></script>
+  <script src="../js/auth.js?v=supa1"></script>
+  <script src="../js/dashboard.js?v=crm-dashboard-v2"></script>
+  <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="dashboard"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
+</body>
+</html>
