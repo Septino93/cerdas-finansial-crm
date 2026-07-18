@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login - Cerdas Finansial</title>
+  <link rel="stylesheet" href="css/auth.css?v=rc1">
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <style>
+    .login-message{
+      margin:14px 0 0;padding:12px 14px;border-radius:14px;
+      font-size:12px;font-weight:800;line-height:1.45
+    }
+    .login-message.error{background:#feecec;color:#b91c1c}
+    .login-message.success{background:#eaf9ef;color:#15803d}
+    .login-message.info{background:#eaf3ff;color:#1967b3}
+    .admin-login-box{
+      margin:16px 0;padding:14px;border-radius:16px;
+      background:#f4f8fc;color:#52677d;font-size:12px;line-height:1.6
+    }
+    .admin-login-box strong{color:#0b3c5d}
+    .reset-login-btn{
+      width:100%;margin-top:10px;padding:12px;border:0;border-radius:14px;
+      background:#eef3f8;color:#52677d;font-weight:900;cursor:pointer
+    }
+  </style>
+</head>
+<body>
+<main class="auth-shell">
+  <section class="auth-card">
+    <img src="assets/images/logo-cerdas-finansial.png" class="auth-logo" alt="Cerdas Finansial">
+    <h1>Cerdas Finansial</h1>
+    <p class="subtitle">Masuk ke CRM admin Cerdas Finansial.</p>
+
+    
+    
+
+    
+
+    <form id="loginForm">
+      <label>Email</label>
+      <input id="loginEmail" type="email" autocomplete="username" required>
+
+      <label>Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+
+      <button class="primary-btn" type="submit">Login</button>
+    </form>
+
+    <div id="loginMessage" class="login-message" hidden></div>
+
+    <div class="admin-login-box"><strong>Login Supabase</strong><br>Gunakan akun admin yang dibuat melalui Supabase Authentication.</div>
+  </section>
+</main>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/config.js?v=supa1"></script><script src="js/supabase-client.js?v=supa1"></script><script src="js/auth.js?v=supa1"></script></body>
+</html>

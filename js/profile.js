@@ -1,0 +1,2 @@
+async function initProfile(){if(!(await protectPage()))return;try{const {data:{user}}=await cfSupabase.auth.getUser();const p=await api.adminProfile();profileName.value=p.full_name||'';profileEmail.value=user?.email||'';profileEmail.readOnly=true;profilePhone.value='';profileForm.addEventListener('submit',async e=>{e.preventDefault();try{await api.saveProfile({name:profileName.value.trim()});alert('Profil berhasil disimpan.')}catch(err){alert(err.message)}})}catch(err){alert('Gagal memuat profil: '+err.message)}}
+document.addEventListener('DOMContentLoaded',initProfile);
