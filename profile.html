@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Profil & Akun - Cerdas Finansial</title>
   <link rel="stylesheet" href="../css/app.css">
-  <link rel="stylesheet" href="../css/crm.css">
+  <link rel="stylesheet" href="../css/crm.css?v=profile-icon-final1">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    .password-heading-icon .password-icon-glyph{display:block;font-size:20px;line-height:1;transform:translateY(-1px)}
-  </style>
 </head>
 <body>
 <main class="mobile-app">
@@ -52,7 +49,14 @@
 
     <form class="form settings-card" id="passwordForm">
       <div class="settings-card-head">
-        <span class="settings-card-icon password-heading-icon" aria-hidden="true"><span class="password-icon-glyph">&#128273;</span></span>
+        <span class="settings-card-icon" aria-hidden="true" style="color:#1478d4;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" role="img" style="display:block;width:22px;height:22px;fill:none;stroke:#1478d4;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+            <circle cx="7.5" cy="15.5" r="3.5" fill="none" stroke="#1478d4"></circle>
+            <path d="M10 13L18.5 4.5" fill="none" stroke="#1478d4"></path>
+            <path d="M15 8L17 10" fill="none" stroke="#1478d4"></path>
+            <path d="M17 6L19 8" fill="none" stroke="#1478d4"></path>
+          </svg>
+        </span>
         <div><h2>Ganti Password</h2><p>Buat password baru minimal 8 karakter.</p></div>
       </div>
       <label for="newPassword">Password Baru</label>
@@ -108,9 +112,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/config.js?v=supa1"></script>
 <script src="../js/supabase-client.js?v=supa1"></script>
-<script src="../js/api.js?v=profilefinal1"></script>
+<script src="../js/api.js?v=profilefix3"></script>
 <script src="../js/auth.js?v=supa1"></script>
-<script src="../js/profile.js?v=profilefinal1"></script>
+<script src="../js/profile.js?v=account3"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="profile"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
 </body>
 </html>
