@@ -157,9 +157,7 @@ async function initDashboard(){
     renderAgenda(todayConsultations,'todayAgenda','Tidak ada agenda hari ini','Jadwal yang dikonfirmasi akan tampil di sini.');
     renderAgenda(tomorrowConsultations,'tomorrowAgenda','Tidak ada agenda besok','Belum ada konsultasi terjadwal untuk besok.');
     renderStatusSummary(d.consultations);
-    renderActivities(d.recentActivities||[]);
-    renderRevenueChart(paidPayments);
-    updateRevenueRange();
+    renderStage8ControlCenter(d);
     if(window.lucide)lucide.createIcons();
   }catch(err){
     console.error(err);
@@ -172,6 +170,80 @@ async function initDashboard(){
 
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('refreshDashboard')?.addEventListener('click',initDashboard);
-  document.getElementById('revenueRange')?.addEventListener('change',updateRevenueRange);
+  document.getElementById('exportDashboardReport')?.addEventListener('click',exportStage8Report);
   initDashboard();
 });
+
+function stage8Followups(activities){
+  return (activities||[]).filter(a=>a.event_type==='follow_up_created'&&!a.metadata?.completed_at&&a.metadata?.follow_up_date).sort((a,b)=>String(a.metadata.follow_up_date).localeCompare(String(b.metadata.follow_up_date)));
+}
+function daysFromToday(dateValue){
+  if(!dateValue)return 0;
+  const a=new Date(todayKey()+'T00:00:00');
+  const b=new Date(String(dateValue).slice(0,10)+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
+function renderStage8ControlCenter(d){
+  const consultations=d.consultations||[];
+  const paid=uniquePaidPayments(d.payments||[]);
+  const billable=consultations.filter(c=>Number(c.amount||0)>0);
+  const paidIds=new Set(paid.map(p=>p.consultation_id).filter(Boolean));
+  const paidBillable=billable.filter(c=>c.payment_status==='paid'||paidIds.has(c.id));
+  const conversion=billable.length?Math.round(paidBillable.length/billable.length*100):0;
+  const avg=paid.length?paid.reduce((sum,p)=>sum+Number(p.amount||0),0)/paid.length:0;
+  const followups=stage8Followups(d.activities||[]);
+  const overdue=followups.filter(f=>daysFromToday(f.metadata.follow_up_date)<0);
+
+  document.getElementById('kpiConversion').textContent=conversion+'%';
+  document.getElementById('kpiConversionNote').textContent=`${paidBillable.length} dari ${billable.length} konsultasi berbayar`;
+  document.getElementById('kpiAverageOrder').textContent=rupiah(avg);
+  document.getElementById('kpiOverdueFollowup').textContent=overdue.length;
+  document.getElementById('kpiFollowupNote').textContent=overdue.length?`${overdue.length} perlu segera ditindaklanjuti`:'Tidak ada follow-up terlambat';
+
+  const serviceMap=new Map();
+  consultations.forEach(c=>{
+    const name=c.service_name_snapshot||'Layanan lainnya';
+    const row=serviceMap.get(name)||{name,count:0,revenue:0};
+    row.count++;
+    if(c.payment_status==='paid'||paidIds.has(c.id))row.revenue+=Number(c.amount||0);
+    serviceMap.set(name,row);
+  });
+  const services=[...serviceMap.values()].sort((a,b)=>b.count-a.count||b.revenue-a.revenue).slice(0,6);
+  const maxCount=Math.max(...services.map(x=>x.count),1);
+  document.getElementById('servicePerformance').innerHTML=services.length?services.map(x=>`<div class="service-performance-row"><div><strong>${esc(x.name)}</strong><small>${x.count} konsultasi</small></div><span>${rupiah(x.revenue)}</span><div class="service-progress"><i style="width:${Math.max(8,x.count/maxCount*100)}%"></i></div></div>`).join(''):'<div class="control-empty">Belum ada data layanan.</div>';
+
+  document.getElementById('followupControlList').innerHTML=followups.length?followups.slice(0,5).map(f=>{
+    const diff=daysFromToday(f.metadata.follow_up_date);
+    const label=diff<0?`${Math.abs(diff)} hari terlambat`:diff===0?'Hari ini':diff===1?'Besok':`${diff} hari lagi`;
+    return `<a class="followup-control-item" href="client-detail.html?id=${encodeURIComponent(f.client_id)}&tab=followup"><span><i data-lucide="bell-ring"></i></span><div><strong>${esc(f.clients?.full_name||'Client')}</strong><small>${esc(f.metadata?.title||f.description||'Follow-up')}</small></div><time>${esc(label)}</time></a>`;
+  }).join(''):'<div class="control-empty">Belum ada follow-up aktif.</div>';
+
+}
+function csvCell(value){return '"'+String(value??'').replace(/"/g,'""')+'"'}
+function exportStage8Report(){
+  if(!dashboardCache)return;
+  const d=dashboardCache;
+  const paid=uniquePaidPayments(d.payments||[]);
+  const rows=[
+    ['Laporan CRM Control Center','Cerdas Finansial'],
+    ['Tanggal Export',new Intl.DateTimeFormat('id-ID',{dateStyle:'full',timeStyle:'short'}).format(new Date())],
+    [],
+    ['Metrik','Nilai'],
+    ['Total Client',d.clientCount||0],
+    ['Total Konsultasi',(d.consultations||[]).length],
+    ['Pembayaran Lunas',paid.length],
+    ['Pembayaran Pending',(d.payments||[]).filter(p=>p.status==='pending').length],
+    ['Total Revenue',paid.reduce((s,p)=>s+Number(p.amount||0),0)],
+    ['Follow-up Aktif',stage8Followups(d.activities||[]).length],
+    [],
+    ['Layanan','Jumlah Konsultasi','Revenue Lunas']
+  ];
+  const paidIds=new Set(paid.map(p=>p.consultation_id).filter(Boolean));
+  const map=new Map();
+  (d.consultations||[]).forEach(c=>{const name=c.service_name_snapshot||'Lainnya';const r=map.get(name)||[name,0,0];r[1]++;if(c.payment_status==='paid'||paidIds.has(c.id))r[2]+=Number(c.amount||0);map.set(name,r)});
+  rows.push(...[...map.values()].sort((a,b)=>b[1]-a[1]));
+  const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`CRM-Control-Center-${todayKey()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}

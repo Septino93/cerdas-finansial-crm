@@ -42,26 +42,26 @@
       </section>
 
 
-      <section class="section dashboard-v2-section analytics-section">
-        <div class="section-head compact-head analytics-head">
-          <div><span class="section-eyebrow">ANALYTICS</span><h2>Revenue</h2></div>
-          <select id="revenueRange" class="revenue-filter" aria-label="Pilih periode revenue">
-            <option value="today">Hari ini</option>
-            <option value="7d">7 hari</option>
-            <option value="30d" selected>30 hari</option>
-            <option value="year">Tahun ini</option>
-            <option value="all">Semua</option>
-          </select>
+      <section class="section dashboard-v2-section analytics-control-section">
+        <div class="control-center-toolbar">
+          <div><span class="section-eyebrow">STAGE 8</span><h2>CRM Control Center</h2><p>Ringkasan operasional internal khusus admin.</p></div>
+          <button class="export-report-btn" id="exportDashboardReport" type="button"><i data-lucide="download"></i> Export</button>
         </div>
-        <div class="revenue-summary-card">
-          <div><small>TOTAL REVENUE</small><strong id="analyticsRevenue">Rp0</strong><span id="analyticsTransactions">0 transaksi lunas</span></div>
-          <span class="revenue-summary-icon"><i data-lucide="trending-up"></i></span>
+        <div class="control-kpi-grid">
+          <article class="control-kpi good"><small>CONVERSION PAID</small><strong id="kpiConversion">0%</strong><span id="kpiConversionNote">0 dari 0 konsultasi berbayar</span></article>
+          <article class="control-kpi"><small>AVG. TRANSAKSI</small><strong id="kpiAverageOrder">Rp0</strong><span>Rata-rata pembayaran lunas</span></article>
+          <article class="control-kpi warn"><small>FOLLOW-UP JATUH TEMPO</small><strong id="kpiOverdueFollowup">0</strong><span id="kpiFollowupNote">Tidak ada follow-up terlambat</span></article>
         </div>
-        <div class="dashboard-panel revenue-chart-panel">
-          <div class="chart-title"><strong>6 bulan terakhir</strong><small>Hanya pembayaran berstatus lunas</small></div>
-          <div class="mini-chart" id="revenueChart"><div class="dashboard-loading">Memuat grafik...</div></div>
+        <div class="control-panel">
+          <div class="control-panel-head"><div><h3>Performa Layanan</h3><small>Berdasarkan jumlah konsultasi dan revenue lunas</small></div></div>
+          <div class="service-performance" id="servicePerformance"><div class="dashboard-loading">Memuat performa...</div></div>
+        </div>
+        <div class="control-panel">
+          <div class="control-panel-head"><div><h3>Follow-up Terdekat</h3><small>Catatan internal yang belum diselesaikan</small></div><a href="clients.html">Client</a></div>
+          <div class="followup-control-list" id="followupControlList"><div class="dashboard-loading">Memuat follow-up...</div></div>
         </div>
       </section>
+
 
       <section class="section dashboard-v2-section">
         <div class="section-head compact-head"><div><span class="section-eyebrow">AGENDA</span><h2>Hari ini</h2></div><a href="bookings.html">Semua</a></div>
@@ -78,10 +78,6 @@
         <div class="compact-status-grid" id="statusSummary"></div>
       </section>
 
-      <section class="section dashboard-v2-section">
-        <div class="section-head compact-head"><div><span class="section-eyebrow">TERBARU</span><h2>Aktivitas</h2></div><a href="history.html">Semua</a></div>
-        <div class="card dashboard-list compact-activity" id="recentActivities"><div class="dashboard-loading">Memuat aktivitas...</div></div>
-      </section>
 
       <section class="section dashboard-v2-section">
         <div class="section-head compact-head"><div><span class="section-eyebrow">AKSI CEPAT</span><h2>Mulai pekerjaan</h2></div></div>
@@ -99,9 +95,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=supa1"></script>
   <script src="../js/supabase-client.js?v=supa1"></script>
-  <script src="../js/api.js?v=crm-dashboard-v35"></script>
+  <script src="../js/api.js?v=stage8"></script>
   <script src="../js/auth.js?v=supa1"></script>
-  <script src="../js/dashboard.js?v=crm-dashboard-v35"></script>
+  <script src="../js/dashboard.js?v=stage8fix1"></script>
   <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="dashboard"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
 </body>
 </html>

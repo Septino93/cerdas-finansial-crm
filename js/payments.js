@@ -28,9 +28,9 @@ async function renderPayments(){
    const controls=p.is_virtual
     ?'<span class="badge blue">Sinkron dari transaksi</span>'
     :`<button class="btn btn-primary" onclick="setPayment('${p.id}','paid')">Tandai Lunas</button><button class="btn btn-danger" onclick="setPayment('${p.id}','failed')">Gagal</button>`;
-   const documentButtons=`<button class="btn btn-secondary" onclick="downloadInvoice('${p.id}')"><i data-lucide="file-text"></i> Invoice PDF</button>${p.status==='paid'?`<button class="btn btn-primary" onclick="downloadReceipt('${p.id}')"><i data-lucide="badge-check"></i> Receipt PDF</button>`:''}`;
+   const documentButtons=`<button class="payment-action payment-action-secondary" onclick="downloadInvoice('${p.id}')"><i data-lucide="file-text"></i><span>Invoice PDF</span></button>${p.status==='paid'?`<button class="payment-action payment-action-primary" onclick="downloadReceipt('${p.id}')"><i data-lucide="badge-check"></i><span>Receipt PDF</span></button>`:''}`;
 
-   return `<article class="list-card">
+   return `<article class="list-card payment-card">
     <div class="row">
      <div>
       <h3>${esc(number)}</h3>
@@ -39,8 +39,8 @@ async function renderPayments(){
      <span class="badge ${badgeClass(p.status)}">${statusLabel(p.status)}</span>
     </div>
     <h3 style="margin-top:12px">${rupiah(p.amount)}</h3>
-    <div class="actions">
-     <a class="btn btn-secondary" href="client-detail.html?id=${encodeURIComponent(p.consultations?.client_id||'')}">Client</a>
+    <div class="actions payment-card-actions">
+     <a class="payment-action payment-action-secondary" href="client-detail.html?id=${encodeURIComponent(p.consultations?.client_id||'')}"><i data-lucide="user-round"></i><span>Client</span></a>
      ${documentButtons}
      ${controls}
     </div>

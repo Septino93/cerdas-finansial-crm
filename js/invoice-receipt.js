@@ -13,15 +13,31 @@
   function service(p){return p.consultations?.service_name_snapshot||p.service_name||'Konsultasi Finansial'}
   function ctor(){const x=window.jspdf?.jsPDF;if(!x)throw new Error('Library PDF belum termuat.');return x}
   function setColor(doc,c){doc.setTextColor(...c)}
+
+  let brandLogoPromise=null;
+  function loadBrandLogo(){
+    if(brandLogoPromise)return brandLogoPromise;
+    brandLogoPromise=new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>resolve(img);
+      img.onerror=()=>resolve(null);
+      img.src='../assets/images/logo-cerdas-finansial.png';
+    });
+    return brandLogoPromise;
+  }
   function text(doc,value,x,y,size=10,style='normal',align='left'){doc.setFont('helvetica',style);doc.setFontSize(size);doc.text(String(value??'-'),x,y,{align})}
   function watermark(doc){doc.setTextColor(238,243,248);doc.setFont('helvetica','bold');doc.setFontSize(58);doc.text('CF',105,162,{align:'center',angle:25});}
-  function header(doc,type,no,status){
-    doc.setFillColor(...NAVY);doc.rect(0,0,210,48,'F');
-    doc.setFillColor(...BLUE);doc.rect(0,0,7,48,'F');
-    doc.setFillColor(255,255,255);doc.roundedRect(18,12,24,24,6,6,'F');setColor(doc,NAVY);text(doc,'CF',30,28,12,'bold','center');
-    doc.setTextColor(255,255,255);text(doc,BRAND.name,49,20,15,'bold');text(doc,BRAND.tagline,49,27,8.5,'normal');
-    text(doc,type==='receipt'?'RECEIPT':'INVOICE',192,19,18,'bold','right');text(doc,no,192,28,8.5,'normal','right');
-    const paid=status==='paid'||type==='receipt';doc.setFillColor(...(paid?GREEN:[181,112,9]));doc.roundedRect(153,33,39,8,4,4,'F');doc.setTextColor(255,255,255);text(doc,paid?'LUNAS':'MENUNGGU',172.5,38.6,7.5,'bold','center');
+  function header(doc,type,no,status,logo){
+    doc.setFillColor(...NAVY);doc.rect(0,0,210,50,'F');
+    doc.setFillColor(214,166,37);doc.rect(0,0,6,50,'F');
+    if(logo){
+      try{doc.addImage(logo,'PNG',14,7,43,34,undefined,'FAST')}catch(e){console.warn('Logo PDF gagal dimuat',e)}
+    }else{
+      doc.setFillColor(255,255,255);doc.roundedRect(18,12,24,24,6,6,'F');setColor(doc,NAVY);text(doc,'CF',30,28,12,'bold','center');
+    }
+    doc.setTextColor(255,255,255);
+    text(doc,type==='receipt'?'RECEIPT':'INVOICE',192,18,18,'bold','right');text(doc,no,192,27,8.5,'normal','right');
+    const paid=status==='paid'||type==='receipt';doc.setFillColor(...(paid?GREEN:[181,112,9]));doc.roundedRect(153,34,39,8,4,4,'F');doc.setTextColor(255,255,255);text(doc,paid?'LUNAS':'MENUNGGU',172.5,39.6,7.5,'bold','center');
   }
   function field(doc,label,value,x,y,w=74){setColor(doc,MUTED);text(doc,label.toUpperCase(),x,y,7.5,'bold');setColor(doc,TEXT);const lines=doc.splitTextToSize(String(value||'-'),w);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text(lines,x,y+6);return lines.length}
   function footer(doc,no){doc.setDrawColor(...LINE);doc.line(18,276,192,276);setColor(doc,MUTED);text(doc,'Dokumen elektronik Cerdas Finansial',18,283,7.5);text(doc,no,105,283,7.5,'normal','center');setColor(doc,NAVY);text(doc,BRAND.planner,192,283,7.5,'bold','right')}
@@ -29,7 +45,8 @@
   async function makePdf(p,type){
     if(type==='receipt'&&p.status!=='paid')throw new Error('Receipt hanya tersedia untuk pembayaran lunas.');
     const Doc=ctor(),doc=new Doc({unit:'mm',format:'a4',orientation:'portrait'}),no=docNumber(p,type),isReceipt=type==='receipt';
-    watermark(doc);header(doc,type,no,p.status);
+    const logo=await loadBrandLogo();
+    watermark(doc);header(doc,type,no,p.status,logo);
     field(doc,'Ditagihkan kepada',client(p),18,62,75);field(doc,'Diterbitkan oleh',BRAND.planner,112,62,80);
     field(doc,'WhatsApp',phone(p),18,82,75);field(doc,'Email',email(p),18,98,75);
     field(doc,isReceipt?'Tanggal pembayaran':'Tanggal invoice',dateOnly(isReceipt?(p.paid_at||p.updated_at):p.created_at),112,82,80);

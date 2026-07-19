@@ -10,12 +10,12 @@ const api={
  async adminProfile(){return mustData(db.from('admin_profiles').select('*').single())},
  async dashboard(){
   const [clients,consultations,payments,recentC,recentClients,recentActivities,profile]=await Promise.all([
-   mustData(db.from('clients').select('*',{count:'exact',head:true})),
+   mustData(db.from('clients').select('id,email,whatsapp,created_at',{count:'exact'})),
    mustData(db.from('consultations').select('id,consultation_no,client_id,service_name_snapshot,amount,consultation_status,payment_status,scheduled_at,created_at,updated_at,clients(full_name)')),
    mustData(db.from('payments').select('id,consultation_id,amount,status,paid_at,created_at,updated_at')),
    mustData(db.from('consultations').select('id,consultation_no,service_name_snapshot,consultation_status,payment_status,scheduled_at,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(5)),
    mustData(db.from('clients').select('*').order('created_at',{ascending:false}).limit(5)),
-   mustData(db.from('activity_logs').select('id,event_type,description,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(5)),
+   mustData(db.from('activity_logs').select('id,event_type,description,created_at,client_id,metadata,clients(full_name)').order('created_at',{ascending:false}).limit(250)),
    db.from('admin_profiles').select('*').maybeSingle().then(({data})=>data)
   ]);
   const linkedConsultationIds=new Set((payments||[]).map(p=>p.consultation_id).filter(Boolean));
@@ -32,7 +32,7 @@ const api={
     is_virtual:true
    }));
   const dashboardPayments=[...(payments||[]),...syntheticPayments];
-  return {clientCount:clients.count||0,consultations,payments:dashboardPayments,recentConsultations:recentC,recentClients,recentActivities,profile};
+  return {clientCount:clients.count||0,clients:clients.data||[],consultations,payments:dashboardPayments,recentConsultations:recentC,recentClients,recentActivities:(recentActivities||[]).slice(0,5),activities:recentActivities||[],profile};
  },
  async listClients(search=''){
   let q=db.from('clients').select('*').order('created_at',{ascending:false});
