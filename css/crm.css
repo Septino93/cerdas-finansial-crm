@@ -69,3 +69,24 @@
 .schedule-preview{margin:12px 0;padding:12px 14px;border-radius:15px;background:#eef9f2;border:1px solid #d5efdf;display:flex;flex-direction:column;gap:3px;color:#24613d}
 .schedule-preview span{font-size:13px;font-weight:800}.schedule-preview small{overflow-wrap:anywhere}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* Stage 3.5 - Revenue Dashboard */
+.dashboard-stats-six{grid-template-columns:repeat(2,minmax(0,1fr))}
+.dashboard-stats-six .revenue-wide{grid-column:1/-1}
+.dashboard-stats-six .revenue-wide strong{font-size:19px}
+.analytics-head{align-items:center}
+.revenue-filter{min-width:104px;border:1px solid #dbe7f3;border-radius:12px;background:#fff;color:#173d67;padding:8px 28px 8px 10px;font-size:10px;font-weight:800;outline:none}
+.revenue-summary-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px;background:linear-gradient(135deg,#0b3c5d,#1976d2);border-radius:20px;color:#fff;box-shadow:0 12px 28px rgba(25,118,210,.2);margin-bottom:10px}
+.revenue-summary-card small,.revenue-summary-card strong,.revenue-summary-card span{display:block}
+.revenue-summary-card small{font-size:8px;font-weight:900;letter-spacing:.1em;opacity:.78}
+.revenue-summary-card strong{margin-top:5px;font-size:25px;line-height:1.1}
+.revenue-summary-card div>span{margin-top:5px;font-size:10px;opacity:.8}
+.revenue-summary-icon{width:46px;height:46px;flex:0 0 46px;border-radius:15px;background:rgba(255,255,255,.16);display:grid!important;place-items:center}
+.revenue-summary-icon svg{width:22px}
+.revenue-chart-panel{padding:15px}
+.chart-title{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:4px}
+.chart-title strong,.chart-title small{display:block}
+.chart-title strong{font-size:12px;color:#0b3c5d}
+.chart-title small{font-size:8px;color:#829ab1;text-align:right}
+.revenue-chart-panel .mini-chart{height:170px}
+@media(max-width:360px){.revenue-summary-card strong{font-size:21px}.chart-title{align-items:flex-start;flex-direction:column;gap:3px}.chart-title small{text-align:left}}

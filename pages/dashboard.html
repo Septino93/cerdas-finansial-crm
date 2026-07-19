@@ -27,11 +27,12 @@
     </header>
 
     <div class="content dashboard-v2-content">
-      <section class="dashboard-v2-stats" aria-label="Ringkasan dashboard">
-        <a class="metric-card" href="clients.html"><span class="metric-icon blue"><i data-lucide="users"></i></span><span><small>CLIENT</small><strong id="statClients">0</strong></span></a>
-        <a class="metric-card" href="bookings.html"><span class="metric-icon green"><i data-lucide="calendar-check-2"></i></span><span><small>HARI INI</small><strong id="statToday">0</strong></span></a>
-        <a class="metric-card" href="payments.html"><span class="metric-icon orange"><i data-lucide="hourglass"></i></span><span><small>PENDING</small><strong id="statPayments">0</strong></span></a>
-        <a class="metric-card" href="payments.html"><span class="metric-icon purple"><i data-lucide="circle-dollar-sign"></i></span><span><small>REVENUE</small><strong id="statRevenue">Rp0</strong></span></a>
+      <section class="dashboard-v2-stats dashboard-stats-six" aria-label="Ringkasan dashboard">
+        <a class="metric-card" href="clients.html"><span class="metric-icon blue"><i data-lucide="users"></i></span><span><small>TOTAL CLIENT</small><strong id="statClients">0</strong></span></a>
+        <a class="metric-card" href="bookings.html"><span class="metric-icon green"><i data-lucide="calendar-check-2"></i></span><span><small>KONSULTASI</small><strong id="statConsultations">0</strong></span></a>
+        <a class="metric-card" href="payments.html?status=paid"><span class="metric-icon green"><i data-lucide="badge-check"></i></span><span><small>PAID</small><strong id="statPaid">0</strong></span></a>
+        <a class="metric-card" href="payments.html?status=pending"><span class="metric-icon orange"><i data-lucide="hourglass"></i></span><span><small>PENDING</small><strong id="statPayments">0</strong></span></a>
+        <a class="metric-card revenue-wide" href="payments.html"><span class="metric-icon purple"><i data-lucide="circle-dollar-sign"></i></span><span><small>REVENUE BULAN INI</small><strong id="statRevenue">Rp0</strong></span></a>
       </section>
 
       <section class="dashboard-v2-alert" id="attentionPanel" hidden>
@@ -40,9 +41,36 @@
         <a href="bookings.html"><i data-lucide="chevron-right"></i></a>
       </section>
 
+
+      <section class="section dashboard-v2-section analytics-section">
+        <div class="section-head compact-head analytics-head">
+          <div><span class="section-eyebrow">ANALYTICS</span><h2>Revenue</h2></div>
+          <select id="revenueRange" class="revenue-filter" aria-label="Pilih periode revenue">
+            <option value="today">Hari ini</option>
+            <option value="7d">7 hari</option>
+            <option value="30d" selected>30 hari</option>
+            <option value="year">Tahun ini</option>
+            <option value="all">Semua</option>
+          </select>
+        </div>
+        <div class="revenue-summary-card">
+          <div><small>TOTAL REVENUE</small><strong id="analyticsRevenue">Rp0</strong><span id="analyticsTransactions">0 transaksi lunas</span></div>
+          <span class="revenue-summary-icon"><i data-lucide="trending-up"></i></span>
+        </div>
+        <div class="dashboard-panel revenue-chart-panel">
+          <div class="chart-title"><strong>6 bulan terakhir</strong><small>Hanya pembayaran berstatus lunas</small></div>
+          <div class="mini-chart" id="revenueChart"><div class="dashboard-loading">Memuat grafik...</div></div>
+        </div>
+      </section>
+
       <section class="section dashboard-v2-section">
         <div class="section-head compact-head"><div><span class="section-eyebrow">AGENDA</span><h2>Hari ini</h2></div><a href="bookings.html">Semua</a></div>
         <div class="agenda-list" id="todayAgenda"><div class="dashboard-loading">Memuat agenda...</div></div>
+      </section>
+
+      <section class="section dashboard-v2-section">
+        <div class="section-head compact-head"><div><span class="section-eyebrow">AGENDA</span><h2>Besok</h2></div><a href="bookings.html">Semua</a></div>
+        <div class="agenda-list" id="tomorrowAgenda"><div class="dashboard-loading">Memuat agenda...</div></div>
       </section>
 
       <section class="section dashboard-v2-section">
@@ -71,9 +99,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js?v=supa1"></script>
   <script src="../js/supabase-client.js?v=supa1"></script>
-  <script src="../js/api.js?v=crm-dashboard-v2"></script>
+  <script src="../js/api.js?v=crm-dashboard-v35"></script>
   <script src="../js/auth.js?v=supa1"></script>
-  <script src="../js/dashboard.js?v=crm-dashboard-v2"></script>
+  <script src="../js/dashboard.js?v=crm-dashboard-v35"></script>
   <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="dashboard"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
 </body>
 </html>
