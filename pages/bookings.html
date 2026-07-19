@@ -34,4 +34,18 @@
     </form>
   </section>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=stage3schedule1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/bookings.js?v=stage3schedule1"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="bookings"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>
+
+<div id="communicationModal" class="crm-modal" hidden>
+  <div class="crm-modal-backdrop" data-close-communication></div>
+  <section class="crm-modal-panel communication-panel" role="dialog" aria-modal="true">
+    <div class="crm-modal-head"><div><small>COMMUNICATION CENTER</small><h2 id="communicationTitle">Komunikasi Client</h2></div><button type="button" class="crm-modal-close" data-close-communication><i data-lucide="x"></i></button></div>
+    <div class="schedule-summary"><strong id="communicationService">Konsultasi</strong><span id="communicationClient">Client</span><small id="communicationNumber">-</small></div>
+    <div id="communicationActions" class="communication-actions"></div>
+    <form id="followUpForm" class="form followup-form">
+      <h3>Jadwalkan Follow Up</h3><label for="followUpDate">Tanggal follow up</label><input id="followUpDate" type="date" required>
+      <label for="followUpNotes">Catatan</label><textarea id="followUpNotes" placeholder="Topik atau tujuan follow up"></textarea>
+      <button class="btn btn-secondary btn-block" type="submit">Simpan Follow Up</button>
+    </form>
+  </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=stage3schedule1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/communications.js?v=stage5"></script><script src="../js/bookings.js?v=stage5"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="bookings"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>

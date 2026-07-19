@@ -1,4 +1,4 @@
-let cachedClients=[],cachedServices=[],cachedConsultations=[],lastScheduled=null;
+let cachedClients=[],cachedServices=[],cachedConsultations=[],lastScheduled=null,activeCommunication=null;
 
 async function initBookings(){
  if(!(await protectPage()))return;
@@ -7,6 +7,8 @@ async function initBookings(){
  scheduleForm.addEventListener('submit',saveSchedule);
  sendScheduleWaBtn.addEventListener('click',sendScheduleWhatsApp);
  document.querySelectorAll('[data-close-schedule]').forEach(el=>el.addEventListener('click',closeScheduleModal));
+ document.querySelectorAll('[data-close-communication]').forEach(el=>el.addEventListener('click',closeCommunicationModal));
+ followUpForm?.addEventListener('submit',saveFollowUp);
  [cachedClients,cachedServices]=await Promise.all([api.listClients(),api.services()]);
  bookingClient.innerHTML='<option value="">Pilih client</option>'+cachedClients.map(c=>`<option value="${c.id}">${esc(c.full_name)}</option>`).join('');
  bookingService.innerHTML=cachedServices.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
@@ -121,6 +123,7 @@ async function renderConsultations(){
    ${x.scheduled_at?`<div class="schedule-preview"><strong>${fmtDate(x.scheduled_at)}</strong><span>${esc(x.meeting_method||'Meeting')}</span>${x.meeting_link?`<small>${esc(x.meeting_link)}</small>`:''}</div>`:''}
    <div class="actions">
     <a class="btn btn-secondary" href="client-detail.html?id=${encodeURIComponent(x.client_id)}">Client</a>
+    <button class="btn btn-secondary" onclick="openCommunicationCenter('${x.id}')">WhatsApp</button>
     ${scheduleButton(x)}
     <button class="btn btn-secondary" onclick="setConsultation('${x.id}','completed')">Selesai</button>
     <button class="btn btn-danger" onclick="setConsultation('${x.id}','cancelled')">Batal</button>
@@ -130,6 +133,41 @@ async function renderConsultations(){
  }catch(err){
   bookingList.innerHTML=`<div class="empty"><strong>Gagal memuat</strong>${esc(err.message)}</div>`;
  }
+}
+
+
+
+function openCommunicationCenter(id){
+ const x=cachedConsultations.find(v=>v.id===id);if(!x)return;
+ activeCommunication=x;
+ communicationTitle.textContent='Komunikasi Client';
+ communicationService.textContent=x.service_name_snapshot||'Konsultasi';
+ communicationClient.textContent=x.clients?.full_name||'Client';
+ communicationNumber.textContent=x.consultation_no||'-';
+ const templates=CFCommunications.getTemplates();
+ const available=[
+  ['booking','message-circle','Booking diterima'],
+  ['payment','badge-check','Pembayaran berhasil'],
+  ['schedule','calendar-check','Jadwal konsultasi'],
+  ['reminder','bell-ring','Reminder H-1'],
+  ['thanks','heart-handshake','Terima kasih']
+ ];
+ communicationActions.innerHTML=available.map(([key,icon,label])=>`<div class="communication-template-card"><span class="template-icon"><i data-lucide="${icon}"></i></span><div><strong>${esc(templates[key]?.label||label)}</strong><small>Pesan otomatis terisi dari data konsultasi</small></div><button type="button" class="btn btn-secondary" onclick="sendCommunication('${key}')">Kirim</button></div>`).join('');
+ followUpDate.min=new Date().toISOString().slice(0,10);followUpDate.value='';followUpNotes.value='';
+ communicationModal.hidden=false;document.body.style.overflow='hidden';if(window.lucide)lucide.createIcons();
+}
+function closeCommunicationModal(){communicationModal.hidden=true;document.body.style.overflow='';activeCommunication=null}
+async function sendCommunication(type){
+ const x=activeCommunication;if(!x)return;
+ const phone=CFCommunications.phone(x.clients?.whatsapp||'');if(!phone){alert('Nomor WhatsApp client tidak tersedia.');return}
+ const t=CFCommunications.getTemplates()[type];if(!t){alert('Template tidak ditemukan.');return}
+ const msg=CFCommunications.render(t.text,CFCommunications.vars(x));
+ window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
+ try{await api.log({client_id:x.client_id,consultation_id:x.id,event_type:`communication_${type}`,description:`WhatsApp ${t.label} dibuka untuk ${x.clients?.full_name||'client'}`,metadata:{channel:'whatsapp',template:type}})}catch(err){console.warn(err)}
+}
+async function saveFollowUp(e){
+ e.preventDefault();const x=activeCommunication;if(!x)return;
+ try{await api.log({client_id:x.client_id,consultation_id:x.id,event_type:'follow_up_scheduled',description:`Follow up dijadwalkan pada ${fmtDate(followUpDate.value)}`,metadata:{follow_up_date:followUpDate.value,notes:followUpNotes.value.trim()}});alert('Follow up berhasil disimpan.');followUpForm.reset()}catch(err){alert('Gagal menyimpan follow up: '+err.message)}
 }
 
 document.addEventListener('DOMContentLoaded',initBookings);

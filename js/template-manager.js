@@ -1,0 +1,5 @@
+async function initTemplateManager(){if(!(await protectPage()))return;renderEditors();templateForm.addEventListener('submit',saveEditors);resetTemplates.addEventListener('click',resetAll);if(window.lucide)lucide.createIcons()}
+function renderEditors(){const t=CFCommunications.getTemplates();templateEditors.innerHTML=Object.entries(t).map(([key,v])=>`<div class="template-editor"><label for="tpl_${key}">${esc(v.label)}</label><textarea id="tpl_${key}" data-template="${key}" required>${esc(v.text)}</textarea></div>`).join('')}
+function saveEditors(e){e.preventDefault();const current=CFCommunications.getTemplates();document.querySelectorAll('[data-template]').forEach(el=>{current[el.dataset.template]={...current[el.dataset.template],text:el.value.trim()}});CFCommunications.saveTemplates(current);templateStatus.textContent='Template berhasil disimpan di browser ini.'}
+function resetAll(){if(!confirm('Kembalikan seluruh template ke versi default?'))return;localStorage.removeItem('cf_crm_communication_templates_v1');renderEditors();templateStatus.textContent='Template default dipulihkan.'}
+document.addEventListener('DOMContentLoaded',initTemplateManager);

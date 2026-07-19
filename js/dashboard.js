@@ -80,11 +80,13 @@ function renderStatusSummary(consultations){
 function renderAttention(consultations,payments){
   const waitingSchedule=consultations.filter(x=>x.consultation_status==='waiting_schedule').length;
   const waitingPayment=Math.max(consultations.filter(x=>x.consultation_status==='waiting_payment').length,payments.filter(x=>x.status==='pending').length);
+  const reminderTomorrow=consultations.filter(x=>x.consultation_status==='confirmed'&&x.scheduled_at&&localDateKey(x.scheduled_at)===addDaysKey(1)).length;
   const panel=document.getElementById('attentionPanel');
-  if(!waitingSchedule&&!waitingPayment){panel.hidden=true;return}
+  if(!waitingSchedule&&!waitingPayment&&!reminderTomorrow){panel.hidden=true;return}
   const parts=[];
   if(waitingPayment)parts.push(`${waitingPayment} pembayaran`);
   if(waitingSchedule)parts.push(`${waitingSchedule} penjadwalan`);
+  if(reminderTomorrow)parts.push(`${reminderTomorrow} reminder H-1`);
   document.getElementById('attentionText').textContent=parts.join(' dan ')+' perlu diperiksa.';
   panel.hidden=false;
 }
