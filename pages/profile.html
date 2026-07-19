@@ -1,1 +1,113 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Profil - Cerdas Finansial</title><link rel="stylesheet" href="../css/app.css"><link rel="stylesheet" href="../css/crm.css"><script src="https://unpkg.com/lucide@latest"></script></head><body><main class="mobile-app"><header class="page-head"><div class="page-titlebar"><a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a><h1>Profil Admin</h1><span class="title-spacer" aria-hidden="true"></span></div><p>Pengaturan internal Cerdas Finansial.</p></header><form class="form" id="profileForm"><h2>Data Financial Planner</h2><label>Nama Profesional</label><input id="profileName" required><label>Email Admin</label><input id="profileEmail" type="email" required><label>Nomor WhatsApp</label><input id="profilePhone" placeholder="Akan dihubungkan pada tahap Website Personal" disabled><button class="btn btn-primary btn-block">Simpan Profil</button><button class="btn btn-danger btn-block" type="button" onclick="logout()">Logout</button></form><a class="settings-link-card" href="settings.html"><span><i data-lucide="messages-square"></i></span><div><strong>Template Komunikasi</strong><small>Atur pesan WhatsApp booking, pembayaran, jadwal, reminder, dan terima kasih.</small></div><i data-lucide="chevron-right"></i></a><article class="form"><h2>Status Integrasi</h2><p style="color:#667085;font-size:13px;line-height:1.6">Website Personal → Supabase → Cerdas Finansial V2 → Midtrans → WhatsApp.</p><span class="badge green">Terhubung ke Supabase</span></article><nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=supa1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/profile.js?v=crm1"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="profile"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Profil & Akun - Cerdas Finansial</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<main class="mobile-app">
+  <header class="page-head">
+    <div class="page-titlebar">
+      <a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a>
+      <h1>Profil & Akun</h1>
+      <span class="title-spacer" aria-hidden="true"></span>
+    </div>
+    <p>Kelola identitas profesional dan keamanan login CRM.</p>
+  </header>
+
+  <section class="profile-settings-wrap">
+    <form class="form settings-card" id="profileForm">
+      <div class="settings-card-head">
+        <span class="settings-card-icon"><i data-lucide="badge-check"></i></span>
+        <div><h2>Profil Financial Planner</h2><p>Nama ini digunakan sebagai identitas admin di CRM.</p></div>
+      </div>
+      <label for="profileName">Nama Profesional</label>
+      <input id="profileName" autocomplete="name" required>
+      <button class="btn btn-primary btn-block" id="saveProfileBtn" type="submit">
+        <i data-lucide="save"></i><span>Simpan Profil</span>
+      </button>
+    </form>
+
+    <form class="form settings-card" id="emailForm">
+      <div class="settings-card-head">
+        <span class="settings-card-icon"><i data-lucide="mail"></i></span>
+        <div><h2>Email Login</h2><p>Email ini dipakai untuk masuk ke CRM.</p></div>
+      </div>
+      <label for="currentEmail">Email Saat Ini</label>
+      <input id="currentEmail" type="email" readonly>
+      <label for="newEmail">Email Baru</label>
+      <input id="newEmail" type="email" autocomplete="email" placeholder="nama@email.com" required>
+      <button class="btn btn-primary btn-block" id="updateEmailBtn" type="submit">
+        <i data-lucide="mail-check"></i><span>Ubah Email Login</span>
+      </button>
+      <small class="form-help">Supabase mungkin mengirim tautan konfirmasi ke email lama atau email baru, sesuai pengaturan Authentication.</small>
+    </form>
+
+    <form class="form settings-card" id="passwordForm">
+      <div class="settings-card-head">
+        <span class="settings-card-icon"><i data-lucide="shield-keyhole"></i></span>
+        <div><h2>Ganti Password</h2><p>Buat password baru minimal 8 karakter.</p></div>
+      </div>
+      <label for="newPassword">Password Baru</label>
+      <div class="password-field">
+        <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required>
+        <button type="button" class="password-toggle" data-target="newPassword" aria-label="Tampilkan password"><i data-lucide="eye"></i></button>
+      </div>
+      <label for="confirmPassword">Konfirmasi Password Baru</label>
+      <div class="password-field">
+        <input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+        <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Tampilkan password"><i data-lucide="eye"></i></button>
+      </div>
+      <button class="btn btn-primary btn-block" id="updatePasswordBtn" type="submit">
+        <i data-lucide="key-round"></i><span>Ganti Password</span>
+      </button>
+    </form>
+
+    <a class="settings-link-card" href="settings.html">
+      <span><i data-lucide="messages-square"></i></span>
+      <div><strong>Template Komunikasi</strong><small>Atur pesan WhatsApp booking, pembayaran, jadwal, reminder, dan terima kasih.</small></div>
+      <i data-lucide="chevron-right"></i>
+    </a>
+
+    <article class="integration-card" aria-label="Status Integrasi">
+      <span class="integration-icon"><i data-lucide="plug-zap"></i></span>
+      <div class="integration-copy">
+        <strong>Status Integrasi</strong>
+        <small>Website Personal → Supabase → CRM → Midtrans</small>
+      </div>
+      <span class="integration-status"><i data-lucide="circle-check"></i> Terhubung</span>
+    </article>
+
+    <div class="logout-card">
+      <div class="logout-copy">
+        <span class="logout-icon"><i data-lucide="shield-check"></i></span>
+        <div><strong>Keluar dari CRM</strong><small>Akhiri sesi pada perangkat ini.</small></div>
+      </div>
+      <button class="profile-logout" type="button" onclick="logout()">
+        <i data-lucide="log-out"></i><span>Logout</span>
+      </button>
+    </div>
+  </section>
+
+  <nav class="bottom-nav bottom-nav-six">
+    <a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a>
+    <a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a>
+    <a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a>
+    <a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a>
+    <a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a>
+    <a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a>
+  </nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js?v=supa1"></script>
+<script src="../js/supabase-client.js?v=supa1"></script>
+<script src="../js/api.js?v=supa1"></script>
+<script src="../js/auth.js?v=supa1"></script>
+<script src="../js/profile.js?v=account2"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="profile"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
+</body>
+</html>
