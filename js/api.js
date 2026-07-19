@@ -171,6 +171,9 @@ const api={
   return {client,consultations,payments,activities};
  },
  async log(row){const {error}=await db.from('activity_logs').insert(row);if(error)console.warn('Activity log gagal:',error.message)},
+ async addClientActivity(clientId,eventType,description,metadata={}){return mustData(db.from('activity_logs').insert({client_id:clientId,event_type:eventType,description,metadata}).select().single())},
+ async updateActivity(id,payload){return mustData(db.from('activity_logs').update(payload).eq('id',id).select().single())},
+ async uploadClientDocument(clientId,file,meta={}){const safe=String(file.name||'file').replace(/[^a-zA-Z0-9._-]/g,'-'),path=`${clientId}/${Date.now()}-${safe}`;const {error}=await db.storage.from('client-documents').upload(path,file,{upsert:false,contentType:file.type||undefined});if(error)throw error;const {data}=db.storage.from('client-documents').getPublicUrl(path);return this.addClientActivity(clientId,'document_uploaded',`Dokumen diupload: ${meta.title||file.name}`,{title:meta.title||file.name,category:meta.category||'Lainnya',filename:file.name,path,url:data.publicUrl,size:file.size,type:file.type})},
  async saveProfile(x){const {data:{user}}=await db.auth.getUser();if(!user)throw new Error('Sesi login tidak ditemukan.');return mustData(db.from('admin_profiles').update({full_name:x.name}).eq('user_id',user.id).select().single())}
 };
 window.api=api;
