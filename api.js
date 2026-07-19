@@ -196,33 +196,23 @@ const api={
   const fullName=String(x?.name||'').trim();
   if(!fullName)throw new Error('Nama profesional wajib diisi.');
 
-  const {data:existing,error:findError}=await db
+  // Jangan memakai .single()/.maybeSingle() agar tidak terjadi error
+  // "Cannot coerce the result to a single JSON object".
+  const {data:updated,error:updateError}=await db
    .from('admin_profiles')
-   .select('user_id')
+   .update({full_name:fullName})
    .eq('user_id',user.id)
-   .limit(1);
-  if(findError)throw findError;
+   .select('*');
+  if(updateError)throw updateError;
+  if(Array.isArray(updated)&&updated.length>0)return updated[0];
 
-  if(existing?.length){
-   const {error:updateError}=await db
-    .from('admin_profiles')
-    .update({full_name:fullName})
-    .eq('user_id',user.id);
-   if(updateError)throw updateError;
-  }else{
-   const {error:insertError}=await db
-    .from('admin_profiles')
-    .insert({user_id:user.id,full_name:fullName,role:'super_admin',is_active:true});
-   if(insertError)throw insertError;
-  }
-
-  const {data:saved,error:readError}=await db
+  // Hanya dijalankan bila profil akun belum pernah dibuat.
+  const {data:inserted,error:insertError}=await db
    .from('admin_profiles')
-   .select('*')
-   .eq('user_id',user.id)
-   .limit(1);
-  if(readError)throw readError;
-  return saved?.[0]||{user_id:user.id,full_name:fullName};
+   .insert({user_id:user.id,full_name:fullName,role:'super_admin',is_active:true})
+   .select('*');
+  if(insertError)throw insertError;
+  return inserted?.[0]||{user_id:user.id,full_name:fullName};
  }
 };
 window.api=api;

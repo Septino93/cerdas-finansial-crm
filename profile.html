@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="../css/app.css">
   <link rel="stylesheet" href="../css/crm.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .password-heading-icon .password-icon-glyph{display:block;font-size:20px;line-height:1;transform:translateY(-1px)}
+  </style>
 </head>
 <body>
 <main class="mobile-app">
@@ -49,14 +52,7 @@
 
     <form class="form settings-card" id="passwordForm">
       <div class="settings-card-head">
-        <span class="settings-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="7.5" cy="15.5" r="3.5"></circle>
-            <path d="m10 13 8.5-8.5"></path>
-            <path d="m15 8 2 2"></path>
-            <path d="m17 6 2 2"></path>
-          </svg>
-        </span>
+        <span class="settings-card-icon password-heading-icon" aria-hidden="true"><span class="password-icon-glyph">&#128273;</span></span>
         <div><h2>Ganti Password</h2><p>Buat password baru minimal 8 karakter.</p></div>
       </div>
       <label for="newPassword">Password Baru</label>
@@ -112,9 +108,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/config.js?v=supa1"></script>
 <script src="../js/supabase-client.js?v=supa1"></script>
-<script src="../js/api.js?v=profilefix3"></script>
+<script src="../js/api.js?v=profilefinal1"></script>
 <script src="../js/auth.js?v=supa1"></script>
-<script src="../js/profile.js?v=account3"></script>
+<script src="../js/profile.js?v=profilefinal1"></script>
 <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="profile"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script>
 </body>
 </html>
