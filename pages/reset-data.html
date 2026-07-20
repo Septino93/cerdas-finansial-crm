@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reset Data Demo - Cerdas Finansial</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css?v=resetdemo1">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<main class="mobile-app">
+  <header class="page-head">
+    <div class="page-titlebar">
+      <a class="icon-back" href="profile.html" aria-label="Kembali ke Profil"><i data-lucide="arrow-left"></i></a>
+      <h1>Reset Data Demo</h1>
+      <span class="title-spacer" aria-hidden="true"></span>
+    </div>
+    <p>Gunakan hanya satu kali sebelum CRM mulai dipakai dengan data client asli.</p>
+  </header>
+
+  <section class="reset-demo-wrap">
+    <article class="reset-warning-card">
+      <span class="reset-warning-icon"><i data-lucide="triangle-alert"></i></span>
+      <div>
+        <h2>Tindakan permanen</h2>
+        <p>Seluruh client, konsultasi, pembayaran, aktivitas, dan dokumen client yang tercatat akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>
+      </div>
+    </article>
+
+    <article class="reset-preserve-card">
+      <h3>Yang tetap dipertahankan</h3>
+      <ul>
+        <li>Akun login dan profil admin</li>
+        <li>Daftar layanan</li>
+        <li>Konfigurasi Supabase, Midtrans, domain, RLS, dan struktur database</li>
+      </ul>
+    </article>
+
+    <form class="form settings-card reset-confirm-card" id="resetDemoForm">
+      <div class="settings-card-head">
+        <span class="settings-card-icon danger"><i data-lucide="trash-2"></i></span>
+        <div><h2>Konfirmasi Reset</h2><p>Ketik kalimat konfirmasi persis seperti yang ditampilkan.</p></div>
+      </div>
+
+      <label for="confirmPhrase">Ketik: <strong>HAPUS DATA DEMO</strong></label>
+      <input id="confirmPhrase" autocomplete="off" placeholder="HAPUS DATA DEMO" required>
+
+      <label class="reset-check-row" for="confirmUnderstand">
+        <input id="confirmUnderstand" type="checkbox">
+        <span>Saya memahami seluruh data operasional akan terhapus permanen.</span>
+      </label>
+
+      <button class="btn btn-danger btn-block" id="resetDemoBtn" type="submit" disabled>
+        <i data-lucide="trash-2"></i><span>Reset Semua Data Demo</span>
+      </button>
+      <p class="reset-result" id="resetResult" role="status"></p>
+    </form>
+  </section>
+
+  <nav class="bottom-nav bottom-nav-six">
+    <a href="dashboard.html"><i data-lucide="home"></i>Home</a>
+    <a href="clients.html"><i data-lucide="users"></i>Client</a>
+    <a href="bookings.html"><i data-lucide="calendar-check"></i>Konsultasi</a>
+    <a href="analysis.html"><i data-lucide="chart-no-axes-combined"></i>Analisis</a>
+    <a href="payments.html"><i data-lucide="wallet-cards"></i>Bayar</a>
+    <a href="profile.html" class="active"><i data-lucide="user"></i>Profil</a>
+  </nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js?v=supa1"></script>
+<script src="../js/supabase-client.js?v=supa1"></script>
+<script src="../js/auth.js?v=supa1"></script>
+<script src="../js/reset-data.js?v=resetdemo1"></script>
+</body>
+</html>
