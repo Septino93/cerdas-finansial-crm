@@ -7,7 +7,14 @@ function statusLabel(v){return ({not_required:'Tidak Perlu Bayar',pending:'Menun
 function badgeClass(v){return ['paid','confirmed','completed','not_required'].includes(v)?'green':['failed','cancelled','expired'].includes(v)?'red':'orange'}
 async function mustData(promise){const {data,error,count}=await promise;if(error)throw error;return count!==null&&count!==undefined?{data,count}:data}
 const api={
- async adminProfile(){return mustData(db.from('admin_profiles').select('*').single())},
+ async adminProfile(){
+  const {data:{user},error:userError}=await db.auth.getUser();
+  if(userError)throw userError;
+  if(!user)throw new Error('Sesi login tidak ditemukan.');
+  const {data,error}=await db.from('admin_profiles').select('*').eq('user_id',user.id).limit(1);
+  if(error)throw error;
+  return data?.[0]||null;
+ },
  async dashboard(){
   const [clients,consultations,payments,recentC,recentClients,recentActivities,profile]=await Promise.all([
    mustData(db.from('clients').select('id,email,whatsapp,created_at',{count:'exact'})),
@@ -16,7 +23,11 @@ const api={
    mustData(db.from('consultations').select('id,consultation_no,service_name_snapshot,consultation_status,payment_status,scheduled_at,created_at,client_id,clients(full_name)').order('created_at',{ascending:false}).limit(5)),
    mustData(db.from('clients').select('*').order('created_at',{ascending:false}).limit(5)),
    mustData(db.from('activity_logs').select('id,event_type,description,created_at,client_id,metadata,clients(full_name)').order('created_at',{ascending:false}).limit(250)),
-   db.from('admin_profiles').select('*').maybeSingle().then(({data})=>data)
+   db.auth.getUser().then(async({data:{user}})=>{
+    if(!user)return null;
+    const {data}=await db.from('admin_profiles').select('*').eq('user_id',user.id).limit(1);
+    return data?.[0]||null;
+   })
   ]);
   const linkedConsultationIds=new Set((payments||[]).map(p=>p.consultation_id).filter(Boolean));
   const syntheticPayments=(consultations||[])
@@ -177,6 +188,31 @@ const api={
  async updateClientDocument(activityId,payload={}){const current=await mustData(db.from('activity_logs').select('*').eq('id',activityId).single()),metadata={...(current.metadata||{}),title:payload.title||current.metadata?.title||current.metadata?.filename,category:payload.category||current.metadata?.category||'Lainnya',public_for_client:Boolean(payload.publicForClient)};return mustData(db.from('activity_logs').update({consultation_id:payload.consultationId||null,description:`Dokumen diperbarui: ${metadata.title}`,metadata}).eq('id',activityId).select().single())},
  async deleteClientDocument(activityId){const current=await mustData(db.from('activity_logs').select('*').eq('id',activityId).single()),path=current.metadata?.path;if(path){const {error}=await db.storage.from('client-documents').remove([path]);if(error)throw error}return mustData(db.from('activity_logs').delete().eq('id',activityId))},
  async getClientDocumentUrl(activityId){const current=await mustData(db.from('activity_logs').select('metadata').eq('id',activityId).single()),path=current.metadata?.path;if(!path)throw new Error('Lokasi file tidak tersedia.');const {data,error}=await db.storage.from('client-documents').createSignedUrl(path,600);if(error)throw error;return data.signedUrl},
- async saveProfile(x){const {data:{user}}=await db.auth.getUser();if(!user)throw new Error('Sesi login tidak ditemukan.');return mustData(db.from('admin_profiles').update({full_name:x.name}).eq('user_id',user.id).select().single())}
+ async saveProfile(x){
+  const {data:{user},error:userError}=await db.auth.getUser();
+  if(userError)throw userError;
+  if(!user)throw new Error('Sesi login tidak ditemukan.');
+
+  const fullName=String(x?.name||'').trim();
+  if(!fullName)throw new Error('Nama profesional wajib diisi.');
+
+  // Jangan memakai .single()/.maybeSingle() agar tidak terjadi error
+  // "Cannot coerce the result to a single JSON object".
+  const {data:updated,error:updateError}=await db
+   .from('admin_profiles')
+   .update({full_name:fullName})
+   .eq('user_id',user.id)
+   .select('*');
+  if(updateError)throw updateError;
+  if(Array.isArray(updated)&&updated.length>0)return updated[0];
+
+  // Hanya dijalankan bila profil akun belum pernah dibuat.
+  const {data:inserted,error:insertError}=await db
+   .from('admin_profiles')
+   .insert({user_id:user.id,full_name:fullName,role:'super_admin',is_active:true})
+   .select('*');
+  if(insertError)throw insertError;
+  return inserted?.[0]||{user_id:user.id,full_name:fullName};
+ }
 };
 window.api=api;

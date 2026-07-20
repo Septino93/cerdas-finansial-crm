@@ -70,11 +70,14 @@ async function initProfile() {
 
     setButtonLoading(button, true, 'Memproses...');
     try {
-      const { data, error } = await cfSupabase.auth.updateUser({ email });
+      const { data, error } = await cfSupabase.auth.updateUser(
+        { email },
+        { emailRedirectTo: `${window.location.origin}/pages/profile.html` }
+      );
       if (error) throw error;
       newEmail.value = '';
-      const effectiveEmail = data?.user?.email || email;
-      currentEmail.value = effectiveEmail;
+      // Saat Secure Email Change aktif, email lama tetap berlaku sampai verifikasi selesai.
+      currentEmail.value = data?.user?.email || currentEmail.value;
       alert('Permintaan perubahan email berhasil. Periksa inbox email lama dan email baru bila Supabase meminta konfirmasi.');
     } catch (error) {
       alert('Gagal mengubah email: ' + friendlyAuthError(error));
