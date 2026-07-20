@@ -25,6 +25,9 @@ async function initProfile() {
   if (!(await protectPage())) return;
 
   const profileForm = document.getElementById('profileForm');
+  const websitePhotoForm = document.getElementById('websitePhotoForm');
+  const websitePhotoInput = document.getElementById('websitePhotoInput');
+  const websitePhotoPreview = document.getElementById('websitePhotoPreview');
   const emailForm = document.getElementById('emailForm');
   const passwordForm = document.getElementById('passwordForm');
   const profileName = document.getElementById('profileName');
@@ -39,6 +42,13 @@ async function initProfile() {
     const profile = await api.adminProfile();
     profileName.value = profile?.full_name || '';
     currentEmail.value = user?.email || '';
+
+    const { data: photoSetting, error: photoError } = await cfSupabase
+      .from('website_settings')
+      .select('value')
+      .eq('key', 'profile_photo_url')
+      .maybeSingle();
+    if (!photoError && photoSetting?.value) websitePhotoPreview.src = photoSetting.value;
   } catch (error) {
     alert('Gagal memuat profil: ' + friendlyAuthError(error));
     return;
@@ -55,6 +65,58 @@ async function initProfile() {
       alert('Profil berhasil disimpan.');
     } catch (error) {
       alert('Gagal menyimpan profil: ' + friendlyAuthError(error));
+    } finally {
+      setButtonLoading(button, false);
+    }
+  });
+
+  websitePhotoInput?.addEventListener('change', () => {
+    const file = websitePhotoInput.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      websitePhotoInput.value = '';
+      return alert('Gunakan file JPG, PNG, atau WebP.');
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      websitePhotoInput.value = '';
+      return alert('Ukuran foto maksimal 5 MB.');
+    }
+    websitePhotoPreview.src = URL.createObjectURL(file);
+  });
+
+  websitePhotoForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = document.getElementById('uploadWebsitePhotoBtn');
+    const file = websitePhotoInput.files?.[0];
+    if (!file) return alert('Pilih foto terlebih dahulu.');
+    if (!confirm('Ubah foto utama di website septino.id sekarang?')) return;
+
+    setButtonLoading(button, true, 'Mengunggah...');
+    try {
+      const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = `profile/profile-${Date.now()}.${extension}`;
+      const { error: uploadError } = await cfSupabase.storage
+        .from('website-assets')
+        .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: publicData } = cfSupabase.storage.from('website-assets').getPublicUrl(path);
+      const publicUrl = publicData?.publicUrl;
+      if (!publicUrl) throw new Error('URL foto tidak berhasil dibuat.');
+
+      const { error: settingError } = await cfSupabase
+        .from('website_settings')
+        .upsert({ key: 'profile_photo_url', value: publicUrl, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+      if (settingError) {
+        await cfSupabase.storage.from('website-assets').remove([path]);
+        throw settingError;
+      }
+
+      websitePhotoPreview.src = `${publicUrl}?v=${Date.now()}`;
+      websitePhotoInput.value = '';
+      alert('Foto website berhasil diperbarui. Buka septino.id lalu refresh untuk melihat perubahan.');
+    } catch (error) {
+      alert('Gagal mengubah foto website: ' + friendlyAuthError(error));
     } finally {
       setButtonLoading(button, false);
     }

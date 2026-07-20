@@ -32,6 +32,23 @@
       </button>
     </form>
 
+
+    <form class="form settings-card" id="websitePhotoForm">
+      <div class="settings-card-head">
+        <span class="settings-card-icon"><i data-lucide="image-up"></i></span>
+        <div><h2>Foto Website Personal</h2><p>Ubah foto utama yang tampil di septino.id.</p></div>
+      </div>
+      <div class="website-photo-preview-wrap">
+        <img id="websitePhotoPreview" class="website-photo-preview" src="../assets/images/logo-icon.png" alt="Preview foto website personal">
+      </div>
+      <label for="websitePhotoInput">Pilih Foto Baru</label>
+      <input id="websitePhotoInput" type="file" accept="image/jpeg,image/png,image/webp" required>
+      <small class="form-help">Format JPG, PNG, atau WebP. Maksimal 5 MB. Foto akan dipotong otomatis berbentuk persegi di website.</small>
+      <button class="btn btn-primary btn-block" id="uploadWebsitePhotoBtn" type="submit">
+        <i data-lucide="upload-cloud"></i><span>Ubah Foto Website</span>
+      </button>
+    </form>
+
     <form class="form settings-card" id="emailForm">
       <div class="settings-card-head">
         <span class="settings-card-icon"><i data-lucide="mail"></i></span>
