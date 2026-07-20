@@ -53,6 +53,7 @@ const api={
  async getClient(id){return mustData(db.from('clients').select('*').eq('id',id).single())},
  async createClient(x){return mustData(db.from('clients').insert({full_name:x.name,email:x.email||null,whatsapp:x.phone,whatsapp_normalized:normalizePhone(x.phone),consultation_credit:Number(x.credit||2)}).select().single())},
  async updateClient(id,x){return mustData(db.from('clients').update(x).eq('id',id).select().single())},
+ async setClientActive(id,isActive){return this.updateClient(id,{is_active:Boolean(isActive)})},
  async deleteClient(id){return mustData(db.from('clients').delete().eq('id',id))},
  async services(){return mustData(db.from('services').select('*').eq('is_active',true).order('sort_order'))},
  async listConsultations(status=''){

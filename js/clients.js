@@ -7,7 +7,6 @@ async function initClients(){
 
   byId('clientForm')?.addEventListener('submit',addClient);
   byId('openClientModalTop')?.addEventListener('click',openClientModal);
-  byId('openClientModalFab')?.addEventListener('click',openClientModal);
   byId('closeClientModal')?.addEventListener('click',closeClientModal);
   byId('cancelClientModal')?.addEventListener('click',closeClientModal);
   byId('clientModalBackdrop')?.addEventListener('click',closeClientModal);
@@ -166,7 +165,9 @@ function renderClients(){
       <div class="actions">
         <a class="btn btn-primary" href="client-detail.html?id=${encodeURIComponent(client.id)}">Buka Detail</a>
         <a class="btn btn-secondary" href="client-detail.html?id=${encodeURIComponent(client.id)}&edit=1"><i data-lucide="pencil"></i> Edit</a>
-        <button class="btn btn-danger" type="button" onclick="removeClient('${client.id}')">Hapus</button>
+        <button class="btn ${active?'btn-warning':'btn-success'}" type="button" onclick="toggleClientStatus('${client.id}',${active})">
+          <i data-lucide="${active?'user-x':'user-check'}"></i> ${active?'Nonaktifkan':'Aktifkan'}
+        </button>
       </div>
     </article>`;
   }).join('');
@@ -184,13 +185,33 @@ function setLoadingState(){
   byId('clientResultInfo').textContent='Memuat data client...';
 }
 
-async function removeClient(id){
-  if(!confirm('Hapus client? Data konsultasi yang terkait dapat mencegah penghapusan.'))return;
+async function toggleClientStatus(id,currentlyActive){
+  const nextActive=!currentlyActive;
+  const action=nextActive?'mengaktifkan kembali':'menonaktifkan';
+  const message=nextActive
+    ?'Aktifkan kembali client ini?'
+    :'Nonaktifkan client ini? Data, konsultasi, dan riwayat tetap tersimpan.';
+  if(!confirm(message))return;
+
   try{
-    await api.deleteClient(id);
+    await api.updateClient(id,{is_active:nextActive});
+    try{
+      await api.log({
+        client_id:id,
+        event_type:nextActive?'client_activated':'client_deactivated',
+        description:nextActive?'Client diaktifkan kembali':'Client dinonaktifkan'
+      });
+    }catch(logError){
+      console.warn('Status tersimpan, tetapi activity log gagal dibuat:',logError);
+    }
     await loadClients();
   }catch(err){
-    alert('Client tidak dapat dihapus: '+err.message);
+    const detail=String(err?.message||'');
+    if(detail.includes('is_active')||detail.includes('column')){
+      alert('Kolom status client belum tersedia. Jalankan file SQL SETUP-CLIENT-STATUS.sql satu kali di Supabase SQL Editor.');
+      return;
+    }
+    alert(`Gagal ${action} client: ${detail}`);
   }
 }
 
