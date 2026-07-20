@@ -92,8 +92,8 @@ const api={
  },
  async listPayments(status=''){
   const [paymentRows,consultationRows]=await Promise.all([
-   mustData(db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name))').order('created_at',{ascending:false})),
-   mustData(db.from('consultations').select('id,consultation_no,client_id,service_name_snapshot,amount,payment_status,created_at,updated_at,clients(full_name)').gt('amount',0).order('created_at',{ascending:false}))
+   mustData(db.from('payments').select('*,consultations(consultation_no,service_name_snapshot,client_id,clients(full_name,email,whatsapp))').order('created_at',{ascending:false})),
+   mustData(db.from('consultations').select('id,consultation_no,client_id,service_name_snapshot,amount,payment_status,created_at,updated_at,clients(full_name,email,whatsapp)').gt('amount',0).order('created_at',{ascending:false}))
   ]);
 
   const linkedConsultationIds=new Set((paymentRows||[]).map(p=>p.consultation_id).filter(Boolean));
@@ -123,6 +123,20 @@ const api={
 
   if(status)rows=rows.filter(p=>p.status===status);
   return rows;
+ },
+ async createManualPayment(x){
+  if(!x.clientId)throw new Error('Pilih client terlebih dahulu.');
+  const amount=Math.round(Number(x.amount||0));
+  if(!Number.isFinite(amount)||amount<1)throw new Error('Nominal tagihan minimal Rp1.');
+  const title=String(x.title||'').trim().slice(0,80);
+  if(!title)throw new Error('Nama tagihan wajib diisi.');
+  const client=await this.getClient(x.clientId);
+  const service=await mustData(db.from('services').select('*').eq('slug','tagihan-manual').limit(1).maybeSingle());
+  if(!service)throw new Error('Jalankan SQL MANUAL-PAYMENT-SETUP.sql terlebih dahulu.');
+  const consultation=await mustData(db.from('consultations').insert({client_id:client.id,service_id:service.id,service_name_snapshot:title,amount,credit_used:0,payment_status:'pending',consultation_status:'waiting_payment',admin_notes:x.notes||null}).select().single());
+  const payment=await mustData(db.from('payments').insert({consultation_id:consultation.id,amount,status:'pending',provider:'midtrans'}).select().single());
+  await this.log({client_id:client.id,consultation_id:consultation.id,payment_id:payment.id,event_type:'manual_payment_created',description:`Tagihan manual dibuat: ${title} (${rupiah(amount)})`,metadata:{source:'crm',title,amount}});
+  return {consultation,payment,client,paymentUrl:`https://septino.id/status-konsultasi.html?consultation=${encodeURIComponent(consultation.consultation_no)}`};
  },
  async updatePayment(id,status){const p=await mustData(db.from('payments').update({status,paid_at:status==='paid'?new Date().toISOString():null}).eq('id',id).select('*,consultations(*)').single());if(p.consultation_id){await db.from('consultations').update({payment_status:status,consultation_status:status==='paid'?'waiting_schedule':status==='failed'?'waiting_payment':p.consultations.consultation_status}).eq('id',p.consultation_id)}await this.log({client_id:p.consultations?.client_id,consultation_id:p.consultation_id,payment_id:p.id,event_type:'payment_updated',description:`Pembayaran ${statusLabel(status)}`});return p},
  async saveConsultationResult(x){
