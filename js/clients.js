@@ -6,6 +6,12 @@ async function initClients(){
   if(!(await protectPage()))return;
 
   byId('clientForm')?.addEventListener('submit',addClient);
+  byId('openClientModalTop')?.addEventListener('click',openClientModal);
+  byId('openClientModalFab')?.addEventListener('click',openClientModal);
+  byId('closeClientModal')?.addEventListener('click',closeClientModal);
+  byId('cancelClientModal')?.addEventListener('click',closeClientModal);
+  byId('clientModalBackdrop')?.addEventListener('click',closeClientModal);
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!byId('clientAddModal')?.hidden)closeClientModal();});
   byId('searchClient')?.addEventListener('input',()=>{
     toggleClearSearch();
     renderClients();
@@ -47,12 +53,33 @@ async function addClient(e){
     });
     e.target.reset();
     byId('clientCredit').value=2;
+    closeClientModal();
     await loadClients();
   }catch(err){
     alert('Gagal menyimpan client: '+err.message);
   }finally{
     if(submitButton){submitButton.disabled=false;submitButton.textContent='Simpan Client';}
   }
+}
+
+function openClientModal(){
+  const modal=byId('clientAddModal');
+  if(!modal)return;
+  modal.hidden=false;
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('client-modal-open');
+  requestAnimationFrame(()=>modal.classList.add('is-open'));
+  setTimeout(()=>byId('clientName')?.focus(),180);
+  if(window.lucide)lucide.createIcons();
+}
+
+function closeClientModal(){
+  const modal=byId('clientAddModal');
+  if(!modal||modal.hidden)return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('client-modal-open');
+  setTimeout(()=>{modal.hidden=true;},220);
 }
 
 function isClientActive(client){

@@ -56,20 +56,57 @@
       <p class="client-result-info" id="clientResultInfo">Memuat data client...</p>
     </section>
 
-    <form class="form" id="clientForm">
-      <h2>Tambah Client Manual</h2>
-      <label>Nama Lengkap</label>
-      <input id="clientName" required>
-      <label>No. WhatsApp</label>
-      <input id="clientPhone" inputmode="tel">
-      <label>Email</label>
-      <input id="clientEmail" type="email">
-      <label>Credit Awal</label>
-      <input id="clientCredit" type="number" min="0" value="2">
-      <button class="btn btn-primary btn-block">Simpan Client</button>
-    </form>
+    <section class="client-list-heading" aria-label="Daftar client">
+      <div>
+        <span>DATABASE CLIENT</span>
+        <h2>Daftar Client</h2>
+      </div>
+      <button class="client-add-inline" id="openClientModalTop" type="button">
+        <i data-lucide="plus"></i> Tambah
+      </button>
+    </section>
 
-    <section class="list" id="clientList" aria-live="polite"></section>
+    <section class="list client-list-section" id="clientList" aria-live="polite"></section>
+
+    <button class="client-fab" id="openClientModalFab" type="button" aria-label="Tambah client" title="Tambah client">
+      <i data-lucide="plus"></i>
+    </button>
+
+    <section class="client-add-modal" id="clientAddModal" hidden aria-hidden="true">
+      <button class="client-modal-backdrop" id="clientModalBackdrop" type="button" aria-label="Tutup form tambah client"></button>
+      <div class="client-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="clientModalTitle">
+        <div class="client-modal-handle" aria-hidden="true"></div>
+        <header class="client-modal-head">
+          <div>
+            <span>CLIENT BARU</span>
+            <h2 id="clientModalTitle">Tambah Client</h2>
+            <p>Masukkan data dasar client. Data dapat diedit kembali kapan saja.</p>
+          </div>
+          <button class="client-modal-close" id="closeClientModal" type="button" aria-label="Tutup">
+            <i data-lucide="x"></i>
+          </button>
+        </header>
+
+        <form class="client-modal-form" id="clientForm">
+          <label for="clientName">Nama Lengkap <span class="required-mark">*</span></label>
+          <input id="clientName" autocomplete="name" required placeholder="Contoh: Budi Santoso">
+
+          <label for="clientPhone">No. WhatsApp</label>
+          <input id="clientPhone" inputmode="tel" autocomplete="tel" placeholder="Contoh: 0812 3456 7890">
+
+          <label for="clientEmail">Email</label>
+          <input id="clientEmail" type="email" autocomplete="email" placeholder="nama@email.com">
+
+          <label for="clientCredit">Credit Awal</label>
+          <input id="clientCredit" type="number" min="0" value="2">
+
+          <div class="client-modal-actions">
+            <button class="btn btn-secondary" id="cancelClientModal" type="button">Batal</button>
+            <button class="btn btn-primary" type="submit">Simpan Client</button>
+          </div>
+        </form>
+      </div>
+    </section>
 
     <nav class="bottom-nav bottom-nav-six">
       <a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a>
@@ -86,7 +123,7 @@
   <script src="../js/supabase-client.js?v=supa1"></script>
   <script src="../js/api.js?v=supa1"></script>
   <script src="../js/auth.js?v=supa1"></script>
-  <script src="../js/clients.js?v=clientsearch2"></script>
+  <script src="../js/clients.js?v=clientmodal1"></script>
   <script>
     document.addEventListener('DOMContentLoaded',()=>{
       document.querySelector('[data-nav="clients"]')?.classList.add('active');
