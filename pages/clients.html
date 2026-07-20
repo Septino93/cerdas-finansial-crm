@@ -1,1 +1,97 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Client - Cerdas Finansial</title><link rel="stylesheet" href="../css/app.css"><link rel="stylesheet" href="../css/crm.css"><script src="https://unpkg.com/lucide@latest"></script></head><body><main class="mobile-app"><header class="page-head"><div class="page-titlebar"><a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a><h1>Client</h1><span class="title-spacer" aria-hidden="true"></span></div><p>Database internal. Client tidak perlu login ke Cerdas Finansial.</p></header><div class="toolbar"><input id="searchClient" placeholder="Cari nama, WhatsApp, atau email..."></div><form class="form" id="clientForm"><h2>Tambah Client Manual</h2><label>Nama Lengkap</label><input id="clientName" required><label>No. WhatsApp</label><input id="clientPhone" inputmode="tel"><label>Email</label><input id="clientEmail" type="email"><label>Credit Awal</label><input id="clientCredit" type="number" min="0" value="2"><button class="btn btn-primary btn-block">Simpan Client</button></form><section class="list" id="clientList"></section><nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=supa1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/clients.js?v=clientedit1"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="clients"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Client - Cerdas Finansial</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="mobile-app">
+    <header class="page-head">
+      <div class="page-titlebar">
+        <a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a>
+        <h1>Client</h1>
+        <span class="title-spacer" aria-hidden="true"></span>
+      </div>
+      <p>Database internal. Client tidak perlu login ke Cerdas Finansial.</p>
+    </header>
+
+    <section class="client-stats" aria-label="Statistik client">
+      <article class="client-stat-card">
+        <span>Total</span>
+        <strong id="totalClientStat">0</strong>
+      </article>
+      <article class="client-stat-card">
+        <span>Aktif</span>
+        <strong id="activeClientStat">0</strong>
+      </article>
+      <article class="client-stat-card">
+        <span>Nonaktif</span>
+        <strong id="inactiveClientStat">0</strong>
+      </article>
+    </section>
+
+    <section class="client-toolbar" aria-label="Pencarian dan filter client">
+      <div class="client-search-box">
+        <i data-lucide="search"></i>
+        <input id="searchClient" type="search" autocomplete="off" placeholder="Cari nama, WhatsApp, atau email..." aria-label="Cari client">
+        <button id="clearClientSearch" type="button" aria-label="Hapus pencarian" title="Hapus pencarian" hidden><i data-lucide="x"></i></button>
+      </div>
+      <div class="client-filter-row">
+        <select id="clientStatusFilter" aria-label="Filter status client">
+          <option value="all">Semua Client</option>
+          <option value="active">Aktif</option>
+          <option value="inactive">Nonaktif</option>
+        </select>
+        <select id="clientSort" aria-label="Urutkan client">
+          <option value="newest">Terbaru</option>
+          <option value="oldest">Terlama</option>
+          <option value="name_asc">Nama A–Z</option>
+          <option value="name_desc">Nama Z–A</option>
+        </select>
+      </div>
+      <p class="client-result-info" id="clientResultInfo">Memuat data client...</p>
+    </section>
+
+    <form class="form" id="clientForm">
+      <h2>Tambah Client Manual</h2>
+      <label>Nama Lengkap</label>
+      <input id="clientName" required>
+      <label>No. WhatsApp</label>
+      <input id="clientPhone" inputmode="tel">
+      <label>Email</label>
+      <input id="clientEmail" type="email">
+      <label>Credit Awal</label>
+      <input id="clientCredit" type="number" min="0" value="2">
+      <button class="btn btn-primary btn-block">Simpan Client</button>
+    </form>
+
+    <section class="list" id="clientList" aria-live="polite"></section>
+
+    <nav class="bottom-nav bottom-nav-six">
+      <a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a>
+      <a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a>
+      <a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a>
+      <a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a>
+      <a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a>
+      <a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js?v=supa1"></script>
+  <script src="../js/supabase-client.js?v=supa1"></script>
+  <script src="../js/api.js?v=supa1"></script>
+  <script src="../js/auth.js?v=supa1"></script>
+  <script src="../js/clients.js?v=clientsearch2"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.querySelector('[data-nav="clients"]')?.classList.add('active');
+      if(window.lucide)lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
