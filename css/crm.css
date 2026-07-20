@@ -159,3 +159,11 @@
 
 /* Client active / inactive actions */
 .btn-warning{color:#9a5a00;background:#fff4d6;border:1px solid #f2d58b}.btn-warning:hover{background:#ffe9ad}.btn-success{color:#17623a;background:#e7f8ee;border:1px solid #b8e6c9}.btn-success:hover{background:#d7f2e2}.list-card .actions .btn-warning,.list-card .actions .btn-success{display:inline-flex;align-items:center;justify-content:center;gap:6px}.list-card .actions .btn-warning svg,.list-card .actions .btn-success svg{width:15px;height:15px}
+
+/* Consultation add modal */
+.consultation-list-heading{margin-top:16px}
+.consultation-list-section{padding-bottom:105px}
+.booking-modal-form select,.booking-modal-form textarea{width:100%;border:1px solid #d9e3ec;border-radius:14px;padding:13px 14px;background:#fff;font:inherit;outline:none}
+.booking-modal-form textarea{min-height:96px;resize:vertical}
+.booking-modal-form select:focus,.booking-modal-form textarea:focus{border-color:#1976d2;box-shadow:0 0 0 4px rgba(25,118,210,.10)}
+@media(max-width:480px){.consultation-list-heading .client-add-inline{display:flex}}

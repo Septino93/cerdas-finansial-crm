@@ -1,4 +1,31 @@
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Konsultasi - Cerdas Finansial</title><link rel="stylesheet" href="../css/app.css"><link rel="stylesheet" href="../css/crm.css"><script src="https://unpkg.com/lucide@latest"></script></head><body><main class="mobile-app"><header class="page-head"><div class="page-titlebar"><a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a><h1>Konsultasi</h1><span class="title-spacer" aria-hidden="true"></span></div><p>Permintaan dari Website Personal masuk ke sini. Pemilihan jadwal tetap dilanjutkan melalui WhatsApp.</p></header><div class="toolbar"><select id="bookingFilter"><option value="">Semua Status</option><option value="waiting_payment">Menunggu Pembayaran</option><option value="waiting_schedule">Menunggu Penjadwalan</option><option value="confirmed">Dikonfirmasi</option><option value="completed">Selesai</option><option value="cancelled">Dibatalkan</option></select></div><form class="form" id="bookingForm"><h2>Tambah Konsultasi Manual</h2><label>Client</label><select id="bookingClient" required></select><label>Layanan</label><select id="bookingService"><option>Asuransi Jiwa</option><option>Penyakit Kritis</option><option>Asuransi Kesehatan</option><option>Dana Pendidikan</option><option>Dana Pensiun</option><option>Review Polis</option><option>Financial Check Up</option></select><label>Metode</label><select id="bookingMethod"><option value="free_credit">Credit Gratis</option><option value="midtrans">Midtrans / Berbayar</option></select><label>Catatan</label><textarea id="bookingNotes"></textarea><button class="btn btn-primary btn-block">Buat Konsultasi</button></form><section class="list" id="bookingList"></section><nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav></main>
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Konsultasi - Cerdas Finansial</title><link rel="stylesheet" href="../css/app.css"><link rel="stylesheet" href="../css/crm.css"><script src="https://unpkg.com/lucide@latest"></script></head><body><main class="mobile-app"><header class="page-head"><div class="page-titlebar"><a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard" title="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a><h1>Konsultasi</h1><span class="title-spacer" aria-hidden="true"></span></div><p>Permintaan dari Website Personal masuk ke sini. Pemilihan jadwal tetap dilanjutkan melalui WhatsApp.</p></header><div class="toolbar"><select id="bookingFilter"><option value="">Semua Status</option><option value="waiting_payment">Menunggu Pembayaran</option><option value="waiting_schedule">Menunggu Penjadwalan</option><option value="confirmed">Dikonfirmasi</option><option value="completed">Selesai</option><option value="cancelled">Dibatalkan</option></select></div>
+<section class="client-list-heading consultation-list-heading" aria-label="Daftar konsultasi">
+  <div><span>DATABASE KONSULTASI</span><h2>Daftar Konsultasi</h2></div>
+  <button class="client-add-inline" id="openBookingModal" type="button"><i data-lucide="plus"></i> Tambah</button>
+</section>
+<section class="list consultation-list-section" id="bookingList"></section><nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav></main>
+<section class="client-add-modal" id="bookingAddModal" hidden aria-hidden="true">
+  <button class="client-modal-backdrop" id="bookingModalBackdrop" type="button" aria-label="Tutup form tambah konsultasi"></button>
+  <div class="client-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+    <div class="client-modal-handle" aria-hidden="true"></div>
+    <header class="client-modal-head">
+      <div><span>KONSULTASI BARU</span><h2 id="bookingModalTitle">Tambah Konsultasi</h2><p>Pilih client, layanan, dan metode konsultasi.</p></div>
+      <button class="client-modal-close" id="closeBookingModal" type="button" aria-label="Tutup"><i data-lucide="x"></i></button>
+    </header>
+    <form class="client-modal-form booking-modal-form" id="bookingForm">
+      <label for="bookingClient">Client <span class="required-mark">*</span></label>
+      <select id="bookingClient" required></select>
+      <label for="bookingService">Layanan</label>
+      <select id="bookingService"><option>Asuransi Jiwa</option><option>Penyakit Kritis</option><option>Asuransi Kesehatan</option><option>Dana Pendidikan</option><option>Dana Pensiun</option><option>Review Polis</option><option>Financial Check Up</option></select>
+      <label for="bookingMethod">Metode</label>
+      <select id="bookingMethod"><option value="free_credit">Credit Gratis</option><option value="midtrans">Midtrans / Berbayar</option></select>
+      <label for="bookingNotes">Catatan</label>
+      <textarea id="bookingNotes" placeholder="Catatan tambahan (opsional)"></textarea>
+      <div class="client-modal-actions"><button class="btn btn-secondary" id="cancelBookingModal" type="button">Batal</button><button class="btn btn-primary" type="submit">Buat Konsultasi</button></div>
+    </form>
+  </div>
+</section>
+
 <div id="scheduleModal" class="crm-modal" hidden>
   <div class="crm-modal-backdrop" data-close-schedule></div>
   <section class="crm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="scheduleTitle">
@@ -48,4 +75,4 @@
     </form>
   </section>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=stage3schedule1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/communications.js?v=stage5"></script><script src="../js/bookings.js?v=stage5"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="bookings"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js?v=supa1"></script><script src="../js/supabase-client.js?v=supa1"></script><script src="../js/api.js?v=stage3schedule1"></script><script src="../js/auth.js?v=supa1"></script><script src="../js/communications.js?v=stage5"></script><script src="../js/bookings.js?v=consultationmodal1"></script><script>document.addEventListener('DOMContentLoaded',()=>{document.querySelector('[data-nav="bookings"]')?.classList.add('active');if(window.lucide)lucide.createIcons();});</script></body></html>

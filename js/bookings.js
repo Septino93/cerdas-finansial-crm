@@ -3,6 +3,11 @@ let cachedClients=[],cachedServices=[],cachedConsultations=[],lastScheduled=null
 async function initBookings(){
  if(!(await protectPage()))return;
  bookingForm.addEventListener('submit',addConsultation);
+ openBookingModal?.addEventListener('click',showBookingModal);
+ closeBookingModal?.addEventListener('click',hideBookingModal);
+ cancelBookingModal?.addEventListener('click',hideBookingModal);
+ bookingModalBackdrop?.addEventListener('click',hideBookingModal);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!bookingAddModal.hidden)hideBookingModal()});
  bookingFilter.addEventListener('change',renderConsultations);
  scheduleForm.addEventListener('submit',saveSchedule);
  sendScheduleWaBtn.addEventListener('click',sendScheduleWhatsApp);
@@ -16,8 +21,26 @@ async function initBookings(){
  await renderConsultations();
 }
 
+function showBookingModal(){
+ bookingAddModal.hidden=false;
+ bookingAddModal.setAttribute('aria-hidden','false');
+ document.body.classList.add('client-modal-open');
+ requestAnimationFrame(()=>bookingAddModal.classList.add('is-open'));
+ setTimeout(()=>bookingClient?.focus(),180);
+ if(window.lucide)lucide.createIcons();
+}
+
+function hideBookingModal(){
+ bookingAddModal.classList.remove('is-open');
+ bookingAddModal.setAttribute('aria-hidden','true');
+ document.body.classList.remove('client-modal-open');
+ setTimeout(()=>{bookingAddModal.hidden=true},240);
+}
+
 async function addConsultation(e){
  e.preventDefault();
+ const submit=e.submitter;
+ if(submit){submit.disabled=true;submit.textContent='Menyimpan...'}
  try{
   await api.createConsultation({
    clientId:bookingClient.value,
@@ -26,8 +49,10 @@ async function addConsultation(e){
    notes:bookingNotes.value.trim()
   });
   e.target.reset();
+  hideBookingModal();
   await renderConsultations();
  }catch(err){alert('Gagal membuat konsultasi: '+err.message)}
+ finally{if(submit){submit.disabled=false;submit.textContent='Buat Konsultasi'}}
 }
 
 async function setConsultation(id,status){
