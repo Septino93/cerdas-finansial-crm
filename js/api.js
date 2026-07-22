@@ -3,7 +3,7 @@ function normalizePhone(v){return String(v||'').replace(/\D/g,'').replace(/^0/,'
 function rupiah(v){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(v||0))}
 function fmtDate(v){if(!v)return'-';return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}
 function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function statusLabel(v){return ({not_required:'Tidak Perlu Bayar',pending:'Menunggu Pembayaran',paid:'Lunas',failed:'Gagal',expired:'Kedaluwarsa',refunded:'Dikembalikan',waiting_payment:'Menunggu Pembayaran',waiting_schedule:'Menunggu Penjadwalan',confirmed:'Jadwal Dikonfirmasi',completed:'Konsultasi Selesai',cancelled:'Dibatalkan'})[v]||String(v||'')}
+function statusLabel(v){return ({not_required:'Tidak Perlu Bayar',pending:'Menunggu Pembayaran',verification:'Menunggu Verifikasi',paid:'Lunas',failed:'Pembayaran Ditolak',expired:'Kedaluwarsa',refunded:'Dikembalikan',waiting_payment:'Menunggu Pembayaran',waiting_schedule:'Menunggu Penjadwalan',confirmed:'Jadwal Dikonfirmasi',completed:'Konsultasi Selesai',cancelled:'Dibatalkan'})[v]||String(v||'')}
 function badgeClass(v){return ['paid','confirmed','completed','not_required'].includes(v)?'green':['failed','cancelled','expired'].includes(v)?'red':'orange'}
 async function mustData(promise){const {data,error,count}=await promise;if(error)throw error;return count!==null&&count!==undefined?{data,count}:data}
 const api={
@@ -70,13 +70,15 @@ const api={
   const row=await mustData(db.from('activity_logs').select('metadata').eq('id',activityId).single());const path=row?.metadata?.path;if(!path)throw new Error('Lokasi bukti pembayaran tidak ditemukan.');
   const {data,error}=await db.storage.from('client-documents').createSignedUrl(path,600);if(error)throw error;return data.signedUrl;
  },
- async verifyManualPayment(consultationId,status){
+ async verifyManualPayment(consultationId,status,rejectionReason=''){
   const c=await mustData(db.from('consultations').select('*').eq('id',consultationId).single());
-  await mustData(db.from('consultations').update({payment_status:status,consultation_status:status==='paid'?'waiting_schedule':'waiting_payment'}).eq('id',consultationId).select().single());
+  const consultationStatus=status==='paid'?'waiting_schedule':'waiting_payment';
+  await mustData(db.from('consultations').update({payment_status:status,consultation_status:consultationStatus}).eq('id',consultationId).select().single());
   const existing=await mustData(db.from('payments').select('*').eq('consultation_id',consultationId).limit(1));
-  if(existing?.[0])await mustData(db.from('payments').update({status,provider:'manual_transfer',paid_at:status==='paid'?new Date().toISOString():null}).eq('id',existing[0].id).select().single());
-  else await mustData(db.from('payments').insert({consultation_id:consultationId,amount:c.amount,status,provider:'manual_transfer',paid_at:status==='paid'?new Date().toISOString():null}).select().single());
-  await this.log({client_id:c.client_id,consultation_id:c.id,event_type:'manual_payment_verified',description:status==='paid'?'Pembayaran transfer disetujui':'Bukti pembayaran ditolak',metadata:{status}});return true;
+  const paymentPayload={status,provider:'manual_transfer',paid_at:status==='paid'?new Date().toISOString():null};
+  if(existing?.[0])await mustData(db.from('payments').update(paymentPayload).eq('id',existing[0].id).select().single());
+  else await mustData(db.from('payments').insert({consultation_id:consultationId,amount:c.amount,...paymentPayload}).select().single());
+  await this.log({client_id:c.client_id,consultation_id:c.id,event_type:status==='paid'?'manual_payment_approved':'manual_payment_rejected',description:status==='paid'?'Pembayaran transfer disetujui':`Bukti pembayaran ditolak${rejectionReason?`: ${rejectionReason}`:''}`,metadata:{status,rejection_reason:rejectionReason||null}});return true;
  },
  async createConsultation(x){
   const c=await this.getClient(x.clientId),services=await this.services(),s=services.find(v=>v.id===x.serviceId);if(!s)throw new Error('Layanan tidak ditemukan.');

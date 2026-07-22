@@ -147,11 +147,11 @@ async function renderConsultations(){
     <span class="badge ${badgeClass(x.consultation_status)}">${statusLabel(x.consultation_status)}</span>
    </div>
    <p><strong>Pembayaran:</strong> ${statusLabel(x.payment_status)} ${Number(x.amount)>0?'· '+rupiah(x.amount):''}</p>
-   ${x.paymentProof?`<div class="schedule-preview"><strong>Bukti pembayaran sudah diunggah</strong><span>${fmtDate(x.paymentProof.created_at)}</span></div>`:''}
+   ${x.paymentProof?`<div class="schedule-preview"><strong>${x.payment_status==='paid'?'Pembayaran sudah disetujui':x.payment_status==='failed'?'Bukti pembayaran ditolak':'Bukti pembayaran menunggu verifikasi'}</strong><span>${fmtDate(x.paymentProof.created_at)}</span></div>`:''}
    ${x.scheduled_at?`<div class="schedule-preview"><strong>${fmtDate(x.scheduled_at)}</strong><span>${esc(x.meeting_method||'Meeting')}</span>${x.meeting_link?`<small>${esc(x.meeting_link)}</small>`:''}</div>`:''}
    <div class="actions">
     <a class="btn btn-secondary" href="client-detail.html?id=${encodeURIComponent(x.client_id)}">Client</a>
-    ${x.paymentProof?`<button class="btn btn-secondary" onclick="viewPaymentProof('${x.paymentProof.id}')">Lihat Bukti</button>${x.payment_status!=='paid'?`<button class="btn btn-primary" onclick="verifyPayment('${x.id}','paid')">Approve</button><button class="btn btn-danger" onclick="verifyPayment('${x.id}','failed')">Reject</button>`:''}`:''}
+    ${x.paymentProof?`<button class="btn btn-secondary" onclick="viewPaymentProof('${x.paymentProof.id}')">Lihat Bukti</button>${x.payment_status==='verification'||x.payment_status==='pending'?`<button class="btn btn-primary" onclick="verifyPayment('${x.id}','paid')">Approve</button><button class="btn btn-danger" onclick="verifyPayment('${x.id}','failed')">Reject</button>`:''}`:''}
     <button class="btn btn-secondary" onclick="openCommunicationCenter('${x.id}')">WhatsApp</button>
     ${scheduleButton(x)}
     <button class="btn btn-secondary" onclick="setConsultation('${x.id}','completed')">Selesai</button>
@@ -202,4 +202,19 @@ async function saveFollowUp(e){
 document.addEventListener('DOMContentLoaded',initBookings);
 
 async function viewPaymentProof(activityId){try{const url=await api.paymentProofUrl(activityId);window.open(url,'_blank','noopener')}catch(e){alert(e.message)}}
-async function verifyPayment(id,status){if(!confirm(status==='paid'?'Setujui pembayaran ini?':'Tolak bukti pembayaran ini?'))return;try{await api.verifyManualPayment(id,status);await renderConsultations()}catch(e){alert(e.message)}}
+async function verifyPayment(id,status){
+ let reason='';
+ if(status==='paid'){
+  if(!confirm('Setujui pembayaran ini dan tandai sebagai Lunas?'))return;
+ }else{
+  reason=prompt('Alasan penolakan bukti pembayaran:','Bukti transfer tidak jelas atau nominal tidak sesuai.');
+  if(reason===null)return;
+  reason=reason.trim();
+  if(!reason){alert('Alasan penolakan wajib diisi.');return}
+ }
+ try{
+  await api.verifyManualPayment(id,status,reason);
+  alert(status==='paid'?'Pembayaran berhasil disetujui dan status menjadi Lunas.':'Bukti pembayaran ditolak. Client dapat mengunggah ulang bukti transfer.');
+  await renderConsultations();
+ }catch(e){alert(e.message)}
+}

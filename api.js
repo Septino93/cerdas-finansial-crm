@@ -3,7 +3,7 @@ function normalizePhone(v){return String(v||'').replace(/\D/g,'').replace(/^0/,'
 function rupiah(v){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(v||0))}
 function fmtDate(v){if(!v)return'-';return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(v))}
 function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function statusLabel(v){return ({not_required:'Tidak Perlu Bayar',pending:'Menunggu Pembayaran',paid:'Lunas',failed:'Gagal',expired:'Kedaluwarsa',refunded:'Dikembalikan',waiting_payment:'Menunggu Pembayaran',waiting_schedule:'Menunggu Penjadwalan',confirmed:'Jadwal Dikonfirmasi',completed:'Konsultasi Selesai',cancelled:'Dibatalkan'})[v]||String(v||'')}
+function statusLabel(v){return ({not_required:'Tidak Perlu Bayar',pending:'Menunggu Pembayaran',verification:'Menunggu Verifikasi',paid:'Lunas',failed:'Pembayaran Ditolak',expired:'Kedaluwarsa',refunded:'Dikembalikan',waiting_payment:'Menunggu Pembayaran',waiting_schedule:'Menunggu Penjadwalan',confirmed:'Jadwal Dikonfirmasi',completed:'Konsultasi Selesai',cancelled:'Dibatalkan'})[v]||String(v||'')}
 function badgeClass(v){return ['paid','confirmed','completed','not_required'].includes(v)?'green':['failed','cancelled','expired'].includes(v)?'red':'orange'}
 async function mustData(promise){const {data,error,count}=await promise;if(error)throw error;return count!==null&&count!==undefined?{data,count}:data}
 const api={
