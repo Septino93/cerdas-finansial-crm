@@ -137,7 +137,7 @@ async function renderConsultations(){
  try{
   cachedConsultations=await api.listConsultations(bookingFilter.value);
   const proofMap=await api.paymentProofs();
-  cachedConsultations=cachedConsultations.map(x=>({...x,paymentProof:proofMap[x.id]||null}));
+  cachedConsultations=cachedConsultations.map(x=>{const proof=proofMap[x.id]||null;return {...x,paymentProof:proof,payment_status:(proof&&x.payment_status==='pending')?'verification':x.payment_status};});
   bookingList.innerHTML=cachedConsultations.map(x=>`<article class="list-card">
    <div class="row">
     <div>
