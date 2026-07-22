@@ -144,7 +144,7 @@ async function renderConsultations(){
      <h3>${esc(x.service_name_snapshot)}</h3>
      <p>${esc(x.clients?.full_name||'Client')}<br>${esc(x.consultation_no)} · ${fmtDate(x.created_at)}</p>
     </div>
-    <span class="badge ${badgeClass(x.consultation_status)}">${statusLabel(x.consultation_status)}</span>
+    <span class="badge ${badgeClass(Number(x.amount)>0?x.payment_status:x.consultation_status)}">${statusLabel(Number(x.amount)>0?x.payment_status:x.consultation_status)}</span>
    </div>
    <p><strong>Pembayaran:</strong> ${statusLabel(x.payment_status)} ${Number(x.amount)>0?'· '+rupiah(x.amount):''}</p>
    ${x.paymentProof?`<div class="schedule-preview"><strong>${x.payment_status==='paid'?'Pembayaran sudah disetujui':x.payment_status==='failed'?'Bukti pembayaran ditolak':'Bukti pembayaran menunggu verifikasi'}</strong><span>${fmtDate(x.paymentProof.created_at)}</span></div>`:''}
