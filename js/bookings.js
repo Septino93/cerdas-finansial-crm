@@ -136,6 +136,8 @@ function scheduleButton(x){
 async function renderConsultations(){
  try{
   cachedConsultations=await api.listConsultations(bookingFilter.value);
+  const proofMap=await api.paymentProofs();
+  cachedConsultations=cachedConsultations.map(x=>({...x,paymentProof:proofMap[x.id]||null}));
   bookingList.innerHTML=cachedConsultations.map(x=>`<article class="list-card">
    <div class="row">
     <div>
@@ -145,9 +147,11 @@ async function renderConsultations(){
     <span class="badge ${badgeClass(x.consultation_status)}">${statusLabel(x.consultation_status)}</span>
    </div>
    <p><strong>Pembayaran:</strong> ${statusLabel(x.payment_status)} ${Number(x.amount)>0?'· '+rupiah(x.amount):''}</p>
+   ${x.paymentProof?`<div class="schedule-preview"><strong>Bukti pembayaran sudah diunggah</strong><span>${fmtDate(x.paymentProof.created_at)}</span></div>`:''}
    ${x.scheduled_at?`<div class="schedule-preview"><strong>${fmtDate(x.scheduled_at)}</strong><span>${esc(x.meeting_method||'Meeting')}</span>${x.meeting_link?`<small>${esc(x.meeting_link)}</small>`:''}</div>`:''}
    <div class="actions">
     <a class="btn btn-secondary" href="client-detail.html?id=${encodeURIComponent(x.client_id)}">Client</a>
+    ${x.paymentProof?`<button class="btn btn-secondary" onclick="viewPaymentProof('${x.paymentProof.id}')">Lihat Bukti</button>${x.payment_status!=='paid'?`<button class="btn btn-primary" onclick="verifyPayment('${x.id}','paid')">Approve</button><button class="btn btn-danger" onclick="verifyPayment('${x.id}','failed')">Reject</button>`:''}`:''}
     <button class="btn btn-secondary" onclick="openCommunicationCenter('${x.id}')">WhatsApp</button>
     ${scheduleButton(x)}
     <button class="btn btn-secondary" onclick="setConsultation('${x.id}','completed')">Selesai</button>
@@ -196,3 +200,6 @@ async function saveFollowUp(e){
 }
 
 document.addEventListener('DOMContentLoaded',initBookings);
+
+async function viewPaymentProof(activityId){try{const url=await api.paymentProofUrl(activityId);window.open(url,'_blank','noopener')}catch(e){alert(e.message)}}
+async function verifyPayment(id,status){if(!confirm(status==='paid'?'Setujui pembayaran ini?':'Tolak bukti pembayaran ini?'))return;try{await api.verifyManualPayment(id,status);await renderConsultations()}catch(e){alert(e.message)}}
