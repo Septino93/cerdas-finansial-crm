@@ -4,7 +4,25 @@ const MED_PROFILE = ["Timestamp","Nomor Registrasi","Email","Nama Pemegang Polis
 const MED_SYSTEM = ["Timestamp","Nomor Registrasi","Status","Sudah Dibaca","Terakhir Dibaca","Folder Dokumen"];
 
 function medEsc(v){return String(v??'').replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}
-async function medCall(action,payload={}){const {data:{session}}=await cfSupabase.auth.getSession();if(!session?.access_token)throw new Error('Sesi CRM berakhir. Silakan login kembali.');const response=await fetch('/api/medical-history',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({action,...payload})});const text=await response.text();let data;try{data=JSON.parse(text)}catch{throw new Error('Respons server modul tidak valid.')}if(!response.ok||!data.success)throw new Error(data.message||'Proses gagal.');return data}
+async function medCall(action,payload={}){
+  const {data:{session}}=await cfSupabase.auth.getSession();
+  if(!session?.access_token)throw new Error('Sesi CRM berakhir. Silakan login kembali.');
+  const url=String(window.CF_CONFIG?.medicalHistoryApiUrl||'').trim();
+  if(!url||url.includes('PASTE_GOOGLE_APPS_SCRIPT')){
+    throw new Error('URL backend Riwayat Penyakit belum diisi di js/config.js.');
+  }
+  const response=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({action,...payload,accessToken:session.access_token}),
+    redirect:'follow'
+  });
+  const text=await response.text();
+  let data;
+  try{data=JSON.parse(text)}catch{throw new Error('Respons Google Apps Script tidak valid. Pastikan deployment Web App aktif.');}
+  if(!data.success)throw new Error(data.message||'Proses gagal.');
+  return data;
+}
 function medShowContent(){med('medicalLoading').hidden=true;med('medicalContent').hidden=false}
 function medShowError(message){med('medicalLoading').hidden=true;med('medicalContent').hidden=false;med('medicalPageError').textContent=message;med('medicalPageError').hidden=false}
 async function medLoad(){med('medicalLoading').hidden=false;med('medicalContent').hidden=true;try{const data=await medCall('listData');medRows=data.rows||[];medShowContent();medStats();medRender();med('medicalPageError').hidden=true}catch(error){medShowError(error.message)}}

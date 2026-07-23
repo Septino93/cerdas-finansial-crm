@@ -180,10 +180,38 @@ async function initDashboard(){
   }
 }
 
+
+async function loadMedicalHistoryCount(){
+  const counter=document.getElementById('statMedicalHistory');
+  if(!counter)return;
+  try{
+    const {data:{session}}=await cfSupabase.auth.getSession();
+    if(!session?.access_token)return;
+    const url=String(window.CF_CONFIG?.medicalHistoryApiUrl||'').trim();
+    if(!url||url.includes('PASTE_GOOGLE_APPS_SCRIPT')){
+      counter.textContent='0';
+      return;
+    }
+    const response=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'listData',accessToken:session.access_token}),
+      redirect:'follow'
+    });
+    const data=JSON.parse(await response.text());
+    if(!data.success)throw new Error(data.message||'Gagal membaca data');
+    counter.textContent=Array.isArray(data.rows)?data.rows.length:0;
+  }catch(error){
+    console.error('Gagal memuat jumlah Riwayat Penyakit:',error);
+    counter.textContent='0';
+  }
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('refreshDashboard')?.addEventListener('click',initDashboard);
+  document.getElementById('refreshDashboard')?.addEventListener('click',()=>{initDashboard();loadMedicalHistoryCount();});
   document.getElementById('exportDashboardReport')?.addEventListener('click',exportStage8Report);
   initDashboard();
+  loadMedicalHistoryCount();
 });
 
 function stage8Followups(activities){
