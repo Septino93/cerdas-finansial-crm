@@ -5,7 +5,8 @@ let state = {
   activeId: null,
   statusMenikah: "menikah",
   statusPasangan: "kerja",
-  polis: {}
+  polis: {},
+  plannerCatatan: ""
 };
 
 const matrixKepalaBeforeEducation = [
@@ -72,6 +73,7 @@ function loadState(){
   }
   if(!state.statusMenikah) state.statusMenikah = "menikah";
   if(!state.statusPasangan) state.statusPasangan = "kerja";
+  if(typeof state.plannerCatatan !== "string") state.plannerCatatan = "";
 }
 
 function saveState(){
@@ -402,6 +404,7 @@ function renderAll(){
   renderMatrix();
   renderSummary();
   renderCTA();
+  renderPlannerNote();
   toggleBottomActions();
 }
 
@@ -729,13 +732,13 @@ function getCTAStatus(score){
   }
   if(score >= 60){
     return {
-      title:"Proteksi Cukup Baik, Masih Ada Gap",
-      desc:"Beberapa area proteksi masih perlu disempurnakan. Prioritaskan perlindungan wajib terlebih dahulu sebelum masuk ke kebutuhan tambahan."
+      title:"Proteksi Cukup Baik, Masih Perlu Dilengkapi",
+      desc:"Beberapa area perlindungan masih perlu dilengkapi agar sesuai dengan kebutuhan keluarga."
     };
   }
   return {
-    title:"Perlu Review Polis Lebih Serius",
-    desc:"Masih banyak area proteksi yang belum lengkap. Segera susun prioritas agar risiko besar tidak mengganggu kondisi keuangan keluarga."
+    title:"Perlu Review Polis Lebih Menyeluruh",
+    desc:"Masih banyak area perlindungan yang belum lengkap dan perlu dibahas lebih lanjut bersama nasabah."
   };
 }
 
@@ -749,37 +752,50 @@ function renderCTA(){
   const ctaDescription = document.getElementById("ctaDescription");
   const ctaScore = document.getElementById("ctaScore");
   const ctaProgressBar = document.getElementById("ctaProgressBar");
-  const ctaOwned = document.getElementById("ctaOwned");
-  const ctaMissing = document.getElementById("ctaMissing");
-  const ctaPriority = document.getElementById("ctaPriority");
-  const list = document.getElementById("ctaRecommendationList");
 
   if(ctaTitle) ctaTitle.textContent = status.title;
   if(ctaDescription) ctaDescription.textContent = status.desc;
   if(ctaScore) ctaScore.textContent = `${stats.score}%`;
   if(ctaProgressBar) ctaProgressBar.style.width = `${stats.score}%`;
-  if(ctaOwned) ctaOwned.textContent = stats.owned;
-  if(ctaMissing) ctaMissing.textContent = stats.missing;
-  if(ctaPriority) ctaPriority.textContent = stats.wajibMissing;
+}
 
-  if(list){
-    const roadmap = getFamilyPolicyRoadmap(8);
-
-    if(roadmap.length){
-      list.innerHTML = roadmap.map((item) => `
-        <li>
-          <strong>${item.member.nama}</strong> — ${item.row.kategori}<br>
-          <small>${item.row.fungsi} • ${getPolicyPriorityLevel(item.row)} • ${getPolicyReason(item.row)}</small>
-        </li>
-      `).join("");
-    }else{
-      list.innerHTML = `
-        <li>
-          Polis keluarga sudah lengkap berdasarkan matrix. Lakukan review tahunan agar manfaat polis tetap relevan.
-        </li>
-      `;
-    }
+function renderPlannerNote(){
+  const field = document.getElementById("plannerCatatan");
+  if(!field) return;
+  if(document.activeElement !== field){
+    field.value = state.plannerCatatan || "";
   }
+}
+
+let plannerNoteTimer = null;
+function savePlannerNote(showConfirmation = false){
+  const field = document.getElementById("plannerCatatan");
+  const status = document.getElementById("plannerNoteStatus");
+  if(!field) return;
+
+  state.plannerCatatan = field.value.trim();
+  saveState();
+
+  if(status){
+    status.textContent = showConfirmation ? "Catatan tersimpan" : "Tersimpan otomatis";
+    status.classList.add("saved");
+    window.setTimeout(() => {
+      status.textContent = "Tersimpan otomatis";
+      status.classList.remove("saved");
+    }, 1800);
+  }
+}
+
+function bindPlannerNoteAutosave(){
+  const field = document.getElementById("plannerCatatan");
+  const status = document.getElementById("plannerNoteStatus");
+  if(!field || field.dataset.bound === "true") return;
+  field.dataset.bound = "true";
+  field.addEventListener("input", () => {
+    if(status) status.textContent = "Menyimpan...";
+    window.clearTimeout(plannerNoteTimer);
+    plannerNoteTimer = window.setTimeout(() => savePlannerNote(false), 500);
+  });
 }
 
 function konsultasiReviewWhatsApp(){
@@ -845,7 +861,7 @@ function updateCurrentName(value){
 function resetReview(){
   if(!confirm("Reset semua data review polis?")) return;
   localStorage.removeItem(STORAGE_KEY);
-  state = { keluarga: [], activeId: null, statusMenikah:"menikah", statusPasangan:"kerja", polis: {} };
+  state = { keluarga: [], activeId: null, statusMenikah:"menikah", statusPasangan:"kerja", polis: {}, plannerCatatan:"" };
   document.getElementById("namaKepala").value = "";
   document.getElementById("tglLahirKepala").value = "";
   document.getElementById("statusMenikah").value = "menikah";
@@ -863,6 +879,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if(typeof protectPage === "function" && !(await protectPage())) return;
   loadState();
   renderAll();
+  bindPlannerNoteAutosave();
   toggleMarriageFields();
 
   ["namaKepala", "tglLahirKepala", "statusMenikah", "namaPasangan", "tglLahirPasangan", "statusPasangan", "jumlahAnak"].forEach(id => {
