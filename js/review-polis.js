@@ -2362,6 +2362,80 @@ function addPlannerAnalysisPage(doc, logoDataUrl, pageNo){
   addPdfFooter(doc, pageNo);
 }
 
+
+function addPlannerNotePage(doc, logoDataUrl, pageNo){
+  const note = String(state.plannerCatatan || "").trim();
+  if(!note) return;
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  doc.setFillColor(248,251,254);
+  doc.rect(0, 0, pageWidth, pageHeight, "F");
+  doc.setFillColor(11,60,93);
+  doc.rect(0, 0, pageWidth, 34, "F");
+
+  addLogoToPdf(doc, logoDataUrl, 13, 5, 38, 24);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(17);
+  doc.setTextColor(255,255,255);
+  doc.text("CATATAN FINANCIAL PLANNER", 58, 15);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(220,236,247);
+  doc.text("Catatan khusus berdasarkan kondisi dan hasil pembahasan dengan nasabah.", 58, 23);
+
+  const kepala = state.keluarga.find(m => m.id === "kepala") || {};
+  const tanggal = new Date().toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" });
+  doc.setFillColor(255,255,255);
+  doc.setDrawColor(210,224,236);
+  doc.roundedRect(14, 42, pageWidth - 28, 20, 4, 4, "FD");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.4);
+  doc.setTextColor(11,60,93);
+  doc.text("Nasabah", 22, 50);
+  doc.text("Tanggal Review", pageWidth/2 + 8, 50);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.4);
+  doc.setTextColor(30,41,59);
+  doc.text(safePdfText(kepala.nama || "-"), 22, 57);
+  doc.text(tanggal, pageWidth/2 + 8, 57);
+
+  doc.setFillColor(255,255,255);
+  doc.setDrawColor(210,224,236);
+  doc.roundedRect(14, 69, pageWidth - 28, 105, 5, 5, "FD");
+  doc.setFillColor(236,246,253);
+  doc.roundedRect(20, 76, pageWidth - 40, 13, 3, 3, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(11,60,93);
+  doc.text("Catatan untuk Nasabah", 27, 84.5);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9.2);
+  doc.setTextColor(30,41,59);
+  const lines = doc.splitTextToSize(safePdfText(note), pageWidth - 54);
+  const maxLines = 18;
+  const visible = lines.slice(0, maxLines);
+  if(lines.length > maxLines){
+    visible[maxLines - 1] = String(visible[maxLines - 1]).replace(/\s*$/, "") + " ...";
+  }
+  doc.text(visible, 27, 99, { lineHeightFactor:1.45, maxWidth:pageWidth - 54 });
+
+  doc.setDrawColor(148,163,184);
+  doc.line(pageWidth - 92, 181, pageWidth - 20, 181);
+  doc.setFont("helvetica", "bolditalic");
+  doc.setFontSize(10.5);
+  doc.setTextColor(11,60,93);
+  doc.text("Septino, QWP®, CIS®", pageWidth - 56, 188, { align:"center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.2);
+  doc.setTextColor(71,85,105);
+  doc.text("Financial Planner", pageWidth - 56, 193, { align:"center" });
+
+  addPdfFooter(doc, pageNo);
+}
+
 async function exportFamilyPDF(){
   if(!state.keluarga.length){
     showFamilyError("Isi dan simpan data keluarga terlebih dahulu sebelum export PDF.");
@@ -2374,6 +2448,10 @@ async function exportFamilyPDF(){
     return;
   }
 
+  const plannerField = document.getElementById("plannerCatatan");
+  if(plannerField){
+    state.plannerCatatan = plannerField.value.trim();
+  }
   state.keluarga.forEach(member => syncMatrixWithTemplate(member.id));
   saveState();
 
@@ -2398,6 +2476,13 @@ async function exportFamilyPDF(){
       doc.addPage("a4", "landscape");
       addMemberPage(doc, member, logoDataUrl, pageNo);
     });
+
+    // Catatan Financial Planner ditampilkan pada halaman khusus agar seluruh catatan terbaca jelas.
+    if(String(state.plannerCatatan || "").trim()){
+      pageNo++;
+      doc.addPage("a4", "landscape");
+      addPlannerNotePage(doc, logoDataUrl, pageNo);
+    }
 
     // Halaman penutup: Analisa Financial Planner + CTA WhatsApp.
     // Halaman Yang Harus Dilengkapi / Executive Summary / Timeline / Roadmap / Infografis dihapus agar PDF lebih singkat.
