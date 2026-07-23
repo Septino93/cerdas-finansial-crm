@@ -5,3 +5,57 @@
 .medical-loading-spinner{width:38px;height:38px;border:4px solid #dbeafe;border-top-color:#1976d2;border-radius:50%;animation:medicalSpin .8s linear infinite;margin-bottom:5px}
 .medical-loading strong{font-size:17px;color:#102a43}.medical-loading span{font-size:13px;line-height:1.5;color:#6b8297;max-width:290px}
 @keyframes medicalSpin{to{transform:rotate(360deg)}}
+
+/* FIX V1.7 — hormati atribut hidden dan rapikan badge status */
+.medical-loading[hidden],
+.medical-empty[hidden],
+.medical-content[hidden],
+.medical-page-error[hidden] {
+  display: none !important;
+}
+
+.medical-row-side {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 96px;
+}
+
+.medical-status {
+  display: inline-block;
+  max-width: 82px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 520px) {
+  .medical-row {
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .medical-avatar {
+    width: 41px;
+    height: 41px;
+    border-radius: 13px;
+  }
+
+  .medical-row-side {
+    max-width: 78px;
+    gap: 3px;
+  }
+
+  .medical-status {
+    max-width: 66px;
+    padding: 5px 6px;
+    font-size: 9px;
+  }
+
+  .medical-row-side svg {
+    width: 14px;
+    flex: 0 0 auto;
+  }
+}
