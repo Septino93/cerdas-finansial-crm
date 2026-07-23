@@ -1276,3 +1276,30 @@ body{margin:0;background:#eef3f8;font-family:Arial,Helvetica,sans-serif;color:#1
     margin-top:6px!important;
   }
 }
+
+
+/* CRM internal: footer action-only */
+.planner-cta-card.planner-cta-actions-only{
+  justify-content:flex-end;
+  padding:22px 26px;
+}
+
+.planner-cta-actions-only .cta-action-buttons{
+  width:100%;
+  justify-content:flex-end;
+}
+
+@media(max-width:640px){
+  .planner-cta-card.planner-cta-actions-only{
+    padding:18px;
+  }
+  .planner-cta-actions-only .cta-action-buttons{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .planner-cta-actions-only .btn-export-pdf,
+  .planner-cta-actions-only .btn-dashboard{
+    justify-content:center;
+    width:100%;
+  }
+}
