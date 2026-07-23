@@ -127,3 +127,16 @@
   }
   .medical-row-side svg{width:16px}
 }
+
+/* FIX V1.9 — judul header terlihat jelas di atas background biru */
+.medical-page-head h1{
+  color:#ffffff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.12);
+}
+.medical-page-head > p{
+  color:rgba(255,255,255,.86) !important;
+}
+.medical-page-head .icon-back{
+  color:#0b3c5d;
+  background:#ffffff;
+}
