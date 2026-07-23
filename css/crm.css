@@ -299,3 +299,13 @@
   .medical-summary-stats em{font-size:8px}
   .medical-summary-link{right:12px;top:12px}
 }
+
+/* Review Polis dashboard card */
+.dashboard-stats-six .review-policy-card{position:relative;grid-column:span 2;min-height:118px;padding-right:88px}
+.review-policy-content{display:flex;flex-direction:column;gap:3px;min-width:0}
+.review-policy-content small{font-size:10px;letter-spacing:.08em;color:#73899a;font-weight:800}
+.review-policy-content strong{font-size:18px;color:#123d58}
+.review-policy-content em{font-style:normal;font-size:11px;line-height:1.35;color:#7890a0}
+.review-policy-link{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;font-size:12px;font-weight:800;color:#0b5f83}
+.review-policy-link svg{width:14px;height:14px}
+@media(max-width:560px){.dashboard-stats-six .review-policy-card{grid-column:1/-1;padding-right:72px}.review-policy-content strong{font-size:16px}.review-policy-content em{font-size:10px}.review-policy-link{right:14px}}

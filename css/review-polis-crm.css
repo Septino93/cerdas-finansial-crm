@@ -1,0 +1,8 @@
+/* CRM integration layer — keeps the original Review Polis calculation intact. */
+body{background:#f3f7fb}
+.top-header{background:linear-gradient(135deg,#0b3c5d,#0e6688);color:#fff;padding-top:max(22px,env(safe-area-inset-top));box-shadow:none}
+.top-header h1,.top-header p{color:#fff}
+.top-header .back-link{background:#fff;color:#0b3c5d;border-radius:18px;display:grid;place-items:center;width:52px;height:52px;text-decoration:none}
+.review-page-full{padding-bottom:42px}
+.family-top-card,.member-top-card,.matrix-panel{box-shadow:0 12px 30px rgba(11,60,93,.08)}
+@media(max-width:720px){.top-header{padding-left:18px;padding-right:18px}.top-header h1{font-size:28px}.top-header p{font-size:14px}.top-header .back-link{width:46px;height:46px}}
