@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b3c5d">
+  <title>Riwayat Penyakit - Cerdas Finansial CRM</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/crm.css">
+  <link rel="stylesheet" href="../css/medical-history.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="mobile-app medical-app">
+    <header class="page-head medical-page-head">
+      <div class="page-titlebar">
+        <a class="icon-back" href="dashboard.html" aria-label="Kembali ke Dashboard"><i data-lucide="arrow-left"></i></a>
+        <h1>Riwayat Penyakit</h1>
+        <button class="medical-head-action" id="refreshMedical" type="button" aria-label="Refresh"><i data-lucide="refresh-cw"></i></button>
+      </div>
+      <p>Kelola kuisioner, jawaban, dan dokumen nasabah langsung dari CRM.</p>
+    </header>
+
+    <section class="medical-connect" id="medicalConnect" hidden>
+      <div class="medical-connect-icon"><i data-lucide="shield-check"></i></div>
+      <div>
+        <span>HUBUNGKAN MODUL</span>
+        <h2>Verifikasi Admin Kuisioner</h2>
+        <p>Masukkan akun admin kuisioner satu kali. Sesi akan disimpan di perangkat ini sehingga modul berikutnya terbuka langsung setelah login CRM.</p>
+      </div>
+      <form id="medicalLoginForm">
+        <label>Username<input id="medicalUsername" autocomplete="username" required placeholder="Username admin kuisioner"></label>
+        <label>Password<input id="medicalPassword" type="password" autocomplete="current-password" required placeholder="Password admin kuisioner"></label>
+        <button class="btn btn-primary" id="medicalLoginBtn" type="submit"><i data-lucide="link"></i> Hubungkan</button>
+        <p class="medical-error" id="medicalLoginError" hidden></p>
+      </form>
+    </section>
+
+    <section class="medical-content" id="medicalContent" hidden>
+      <section class="medical-stats" aria-label="Statistik kuisioner">
+        <article><span>Total</span><strong id="medicalTotal">0</strong></article>
+        <article><span>Hari Ini</span><strong id="medicalToday">0</strong></article>
+        <article><span>Baru</span><strong id="medicalNew">0</strong></article>
+      </section>
+
+      <section class="medical-toolbar">
+        <div class="medical-search"><i data-lucide="search"></i><input id="medicalSearch" type="search" placeholder="Cari nama, HP, email, atau registrasi"></div>
+        <select id="medicalStatusFilter" aria-label="Filter status">
+          <option value="all">Semua Status</option>
+          <option value="Baru">Baru</option>
+          <option value="Sedang Dicek">Sedang Dicek</option>
+          <option value="Dokumen Kurang">Dokumen Kurang</option>
+          <option value="Sudah Lengkap">Sudah Lengkap</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </section>
+
+      <section class="medical-list-head"><div><span>DATA PENGAJUAN</span><h2>Kuisioner Masuk</h2></div><button id="disconnectMedical" type="button" title="Putuskan sesi kuisioner"><i data-lucide="unlink"></i></button></section>
+      <section class="medical-list" id="medicalList" aria-live="polite"></section>
+      <div class="medical-empty" id="medicalEmpty" hidden><i data-lucide="inbox"></i><strong>Data tidak ditemukan</strong><span>Coba ubah pencarian atau filter.</span></div>
+      <p class="medical-error medical-page-error" id="medicalPageError" hidden></p>
+    </section>
+
+    <nav class="bottom-nav bottom-nav-six"><a href="dashboard.html" data-nav="dashboard"><i data-lucide="home"></i>Home</a><a href="clients.html" data-nav="clients"><i data-lucide="users"></i>Client</a><a href="bookings.html" data-nav="bookings"><i data-lucide="calendar-check"></i>Konsultasi</a><a href="analysis.html" data-nav="analysis"><i data-lucide="chart-no-axes-combined"></i>Analisis</a><a href="payments.html" data-nav="payments"><i data-lucide="wallet-cards"></i>Bayar</a><a href="profile.html" data-nav="profile"><i data-lucide="user"></i>Profil</a></nav>
+  </main>
+
+  <section class="medical-modal" id="medicalModal" hidden aria-hidden="true">
+    <button class="medical-modal-backdrop" id="medicalModalBackdrop" type="button" aria-label="Tutup"></button>
+    <article class="medical-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="medicalDetailTitle">
+      <header class="medical-modal-head">
+        <div><span id="medicalDetailReg">DETAIL PENGAJUAN</span><h2 id="medicalDetailTitle">Nasabah</h2><p id="medicalDetailMeta"></p></div>
+        <button id="closeMedicalModal" type="button"><i data-lucide="x"></i></button>
+      </header>
+      <div class="medical-detail-actions">
+        <button id="medicalPdf" type="button"><i data-lucide="download"></i> PDF</button>
+        <button id="medicalFolder" type="button"><i data-lucide="folder-open"></i> Folder</button>
+        <button id="medicalWhatsApp" type="button"><i data-lucide="message-circle"></i> WhatsApp</button>
+      </div>
+      <div class="medical-status-editor"><label>Status<select id="medicalDetailStatus"><option>Baru</option><option>Sedang Dicek</option><option>Dokumen Kurang</option><option>Sudah Lengkap</option><option>Selesai</option></select></label><button class="btn btn-primary" id="medicalSaveStatus" type="button">Simpan</button></div>
+      <div class="medical-tabs"><button class="active" data-medical-tab="profile">Data Nasabah</button><button data-medical-tab="answers">Kuisioner</button><button data-medical-tab="documents">Dokumen</button></div>
+      <div class="medical-tab-panel active" id="medical-tab-profile"></div>
+      <div class="medical-tab-panel" id="medical-tab-answers"></div>
+      <div class="medical-tab-panel" id="medical-tab-documents"></div>
+      <button class="medical-delete" id="medicalDelete" type="button"><i data-lucide="trash-2"></i> Hapus Pengajuan</button>
+    </article>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js?v=supa1"></script>
+  <script src="../js/supabase-client.js?v=supa1"></script>
+  <script src="../js/api.js?v=supa1"></script>
+  <script src="../js/auth.js?v=supa1"></script>
+  <script src="../js/medical-history-config.js"></script>
+  <script src="../js/medical-history.js"></script>
+</body>
+</html>
