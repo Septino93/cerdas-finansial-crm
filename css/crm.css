@@ -175,3 +175,11 @@
 .website-photo-preview-wrap{display:flex;justify-content:center;margin:4px 0 14px}
 .website-photo-preview{width:116px;height:116px;object-fit:cover;border-radius:28px;border:4px solid #fff;background:#eef5ff;box-shadow:0 12px 28px rgba(15,55,95,.16)}
 #websitePhotoInput{padding:11px;background:#fff}
+
+/* Dashboard production sederhana */
+.dashboard-control-simple{padding-bottom:12px}
+.dashboard-control-simple .control-center-toolbar{margin-bottom:0}
+.dashboard-control-simple .control-center-toolbar h2{margin:2px 0 0}
+.dashboard-v2 .compact-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.dashboard-v2 .compact-status-card:last-child:nth-child(odd){grid-column:1/-1}
+@media(min-width:700px){.dashboard-v2 .compact-status-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.dashboard-v2 .compact-status-card:last-child:nth-child(odd){grid-column:auto}}

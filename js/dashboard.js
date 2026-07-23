@@ -66,16 +66,32 @@ function renderAgenda(rows,targetId,emptyTitle,emptyText){
   box.innerHTML=rows.slice(0,4).map(x=>`<a class="agenda-item" href="client-detail.html?id=${encodeURIComponent(x.client_id)}"><time>${esc(timeOnly(x.scheduled_at))}</time><div><strong>${esc(x.clients?.full_name||'Client')}</strong><small>${esc(x.service_name_snapshot||'Konsultasi')}</small></div><span class="badge ${badgeClass(x.consultation_status)}">${statusLabel(x.consultation_status)}</span></a>`).join('');
 }
 function renderStatusSummary(consultations){
+  const rows=consultations||[];
   const statuses=[
-    ['waiting_payment','Menunggu Bayar','credit-card','orange'],
-    ['waiting_schedule','Menunggu Jadwal','calendar-clock','blue'],
-    ['confirmed','Dikonfirmasi','calendar-check-2','purple'],
-    ['completed','Selesai','circle-check-big','green']
+    {
+      label:'Menunggu Pembayaran',icon:'credit-card',color:'orange',
+      count:rows.filter(x=>Number(x.amount||0)>0&&x.payment_status==='pending'&&!x.payment_proof_url).length
+    },
+    {
+      label:'Menunggu Verifikasi',icon:'scan-search',color:'orange',
+      count:rows.filter(x=>x.payment_status==='verification'||(Number(x.amount||0)>0&&x.payment_status==='pending'&&x.payment_proof_url)).length
+    },
+    {
+      label:'Menunggu Jadwal',icon:'calendar-clock',color:'blue',
+      count:rows.filter(x=>x.consultation_status==='waiting_schedule').length
+    },
+    {
+      label:'Dikonfirmasi',icon:'calendar-check-2',color:'purple',
+      count:rows.filter(x=>x.consultation_status==='confirmed').length
+    },
+    {
+      label:'Selesai',icon:'circle-check-big',color:'green',
+      count:rows.filter(x=>x.consultation_status==='completed').length
+    }
   ];
-  document.getElementById('statusSummary').innerHTML=statuses.map(([status,label,icon,color])=>{
-    const count=consultations.filter(x=>x.consultation_status===status).length;
-    return `<a class="compact-status-card" href="bookings.html?status=${encodeURIComponent(status)}"><span class="metric-icon ${color}"><i data-lucide="${icon}"></i></span><span><strong>${count}</strong><small>${label}</small></span></a>`;
-  }).join('');
+  const box=document.getElementById('statusSummary');
+  if(!box)return;
+  box.innerHTML=statuses.map(item=>`<a class="compact-status-card" href="bookings.html"><span class="metric-icon ${item.color}"><i data-lucide="${item.icon}"></i></span><span><strong>${item.count}</strong><small>${item.label}</small></span></a>`).join('');
 }
 function renderAttention(consultations,payments){
   const waitingSchedule=consultations.filter(x=>x.consultation_status==='waiting_schedule').length;
@@ -153,11 +169,7 @@ async function initDashboard(){
     document.getElementById('statRevenue').textContent=rupiah(monthlyRevenue);
     document.getElementById('lastUpdated').textContent=`Diperbarui ${new Intl.DateTimeFormat('id-ID',{timeZone:DASHBOARD_TZ,hour:'2-digit',minute:'2-digit'}).format(now)} WIB`;
 
-    renderAttention(d.consultations,d.payments);
-    renderAgenda(todayConsultations,'todayAgenda','Tidak ada agenda hari ini','Jadwal yang dikonfirmasi akan tampil di sini.');
-    renderAgenda(tomorrowConsultations,'tomorrowAgenda','Tidak ada agenda besok','Belum ada konsultasi terjadwal untuk besok.');
     renderStatusSummary(d.consultations);
-    renderStage8ControlCenter(d);
     if(window.lucide)lucide.createIcons();
   }catch(err){
     console.error(err);
