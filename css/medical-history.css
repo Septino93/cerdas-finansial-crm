@@ -59,3 +59,71 @@
     flex: 0 0 auto;
   }
 }
+
+
+/* FIX V1.8 — kartu pengajuan lebih rapi dan status tidak terpotong */
+.medical-row{
+  display:grid;
+  grid-template-columns:45px minmax(0,1fr) auto;
+  align-items:center;
+  column-gap:12px;
+  row-gap:6px;
+}
+.medical-row-main{
+  overflow:hidden;
+}
+.medical-row-main strong{
+  font-size:15px;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.medical-row-main small,.medical-row-main em{
+  display:block;
+  width:100%;
+  line-height:1.35;
+}
+.medical-row-reg{font-weight:700;color:#607f90!important}
+.medical-row-date{color:#8a9ca6!important}
+.medical-row-side{
+  max-width:none;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
+.medical-status{
+  max-width:none;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+  padding:6px 9px;
+  font-size:9.5px;
+  font-weight:800;
+}
+@media (max-width:520px){
+  .medical-row{
+    grid-template-columns:42px minmax(0,1fr) 18px;
+    padding:13px;
+    gap:8px 10px;
+  }
+  .medical-avatar{grid-row:1 / span 2}
+  .medical-row-main{grid-column:2;grid-row:1}
+  .medical-row-side{
+    grid-column:2 / 4;
+    grid-row:2;
+    justify-content:space-between;
+    width:100%;
+    max-width:none;
+    margin-top:2px;
+  }
+  .medical-status{
+    max-width:100%;
+    white-space:normal;
+    line-height:1.15;
+    padding:5px 9px;
+    font-size:9px;
+  }
+  .medical-row-side svg{width:16px}
+}
