@@ -32,7 +32,18 @@
         <a class="metric-card" href="bookings.html"><span class="metric-icon green"><i data-lucide="calendar-check-2"></i></span><span><small>KONSULTASI</small><strong id="statConsultations">0</strong></span></a>
         <a class="metric-card" href="payments.html?status=paid"><span class="metric-icon green"><i data-lucide="badge-check"></i></span><span><small>PAID</small><strong id="statPaid">0</strong></span></a>
         <a class="metric-card" href="payments.html?status=pending"><span class="metric-icon orange"><i data-lucide="hourglass"></i></span><span><small>PENDING</small><strong id="statPayments">0</strong></span></a>
-        <a class="metric-card" href="medical-history.html"><span class="metric-icon blue"><i data-lucide="heart-pulse"></i></span><span><small>RIWAYAT PENYAKIT</small><strong id="statMedicalHistory">0</strong></span></a>
+        <a class="metric-card medical-summary-card" href="medical-history.html" aria-label="Kelola Riwayat Penyakit">
+          <span class="metric-icon blue"><i data-lucide="heart-pulse"></i></span>
+          <span class="medical-summary-content">
+            <small>RIWAYAT PENYAKIT</small>
+            <span class="medical-summary-stats">
+              <span><strong id="statMedicalHistory">0</strong><em>Pengajuan</em></span>
+              <span><strong id="statMedicalNew">0</strong><em>Baru</em></span>
+              <span><strong id="statMedicalDone">0</strong><em>Selesai</em></span>
+            </span>
+          </span>
+          <span class="medical-summary-link">Kelola <i data-lucide="arrow-right"></i></span>
+        </a>
         <a class="metric-card revenue-wide" href="payments.html"><span class="metric-icon purple"><i data-lucide="circle-dollar-sign"></i></span><span><small>REVENUE BULAN INI</small><strong id="statRevenue">Rp0</strong></span></a>
       </section>
 

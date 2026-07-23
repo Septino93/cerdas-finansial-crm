@@ -182,14 +182,21 @@ async function initDashboard(){
 
 
 async function loadMedicalHistoryCount(){
-  const counter=document.getElementById('statMedicalHistory');
-  if(!counter)return;
+  const totalEl=document.getElementById('statMedicalHistory');
+  const newEl=document.getElementById('statMedicalNew');
+  const doneEl=document.getElementById('statMedicalDone');
+  if(!totalEl)return;
+  const setCounts=(total=0,baru=0,selesai=0)=>{
+    totalEl.textContent=total;
+    if(newEl)newEl.textContent=baru;
+    if(doneEl)doneEl.textContent=selesai;
+  };
   try{
     const {data:{session}}=await cfSupabase.auth.getSession();
-    if(!session?.access_token)return;
+    if(!session?.access_token){setCounts();return;}
     const url=String(window.CF_CONFIG?.medicalHistoryApiUrl||'').trim();
     if(!url||url.includes('PASTE_GOOGLE_APPS_SCRIPT')){
-      counter.textContent='0';
+      setCounts();
       return;
     }
     const response=await fetch(url,{
@@ -200,10 +207,13 @@ async function loadMedicalHistoryCount(){
     });
     const data=JSON.parse(await response.text());
     if(!data.success)throw new Error(data.message||'Gagal membaca data');
-    counter.textContent=Array.isArray(data.rows)?data.rows.length:0;
+    const rows=Array.isArray(data.rows)?data.rows:[];
+    const baru=rows.filter(row=>String(row.Status||'Baru').trim()==='Baru').length;
+    const selesai=rows.filter(row=>String(row.Status||'').trim()==='Selesai').length;
+    setCounts(rows.length,baru,selesai);
   }catch(error){
-    console.error('Gagal memuat jumlah Riwayat Penyakit:',error);
-    counter.textContent='0';
+    console.error('Gagal memuat ringkasan Riwayat Penyakit:',error);
+    setCounts();
   }
 }
 

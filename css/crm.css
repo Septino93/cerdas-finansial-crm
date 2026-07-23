@@ -240,3 +240,62 @@
     font-size:8px;
   }
 }
+
+
+/* Ringkasan Riwayat Penyakit di dashboard */
+.dashboard-stats-six .medical-summary-card{
+  grid-column:1/-1;
+  position:relative;
+  align-items:flex-start;
+  padding:15px;
+}
+.medical-summary-content{flex:1;min-width:0}
+.medical-summary-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:9px;
+}
+.medical-summary-stats>span{
+  min-width:0;
+  padding:8px 9px;
+  border-radius:12px;
+  background:#f5f8fb;
+}
+.metric-card .medical-summary-stats strong{
+  margin:0;
+  font-size:17px;
+  line-height:1;
+  overflow:visible;
+}
+.medical-summary-stats em{
+  display:block;
+  margin-top:4px;
+  color:#71869a;
+  font-size:9px;
+  font-weight:800;
+  font-style:normal;
+  white-space:nowrap;
+}
+.medical-summary-stats>span:nth-child(2) strong{color:#b45309}
+.medical-summary-stats>span:nth-child(3) strong{color:#15803d}
+.medical-summary-link{
+  position:absolute;
+  right:15px;
+  top:14px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  color:#1976d2;
+  font-size:10px;
+  font-weight:900;
+}
+.medical-summary-link svg{width:14px;height:14px}
+@media(max-width:360px){
+  .dashboard-stats-six .medical-summary-card{padding:13px}
+  .medical-summary-stats{gap:6px}
+  .medical-summary-stats>span{padding:7px}
+  .metric-card .medical-summary-stats strong{font-size:15px}
+  .medical-summary-stats em{font-size:8px}
+  .medical-summary-link{right:12px;top:12px}
+}
