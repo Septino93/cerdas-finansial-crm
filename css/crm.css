@@ -183,3 +183,60 @@
 .dashboard-v2 .compact-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .dashboard-v2 .compact-status-card:last-child:nth-child(odd){grid-column:1/-1}
 @media(min-width:700px){.dashboard-v2 .compact-status-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.dashboard-v2 .compact-status-card:last-child:nth-child(odd){grid-column:auto}}
+
+/* Dashboard simple refinement v2.0.1 */
+.dashboard-v2 .compact-status-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px;
+}
+.dashboard-v2 .compact-status-card{
+  min-height:82px;
+  align-items:center;
+  padding:12px 13px;
+  gap:11px;
+}
+.dashboard-v2 .compact-status-card:last-child:nth-child(odd){
+  grid-column:1/-1 !important;
+}
+.dashboard-v2 .compact-status-card>span:last-child{
+  min-width:0;
+  flex:1;
+}
+.dashboard-v2 .compact-status-card strong{
+  font-size:18px;
+  line-height:1;
+}
+.dashboard-v2 .compact-status-card small{
+  margin-top:5px;
+  font-size:9px;
+  line-height:1.25;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+.dashboard-v2 .dashboard-v2-section:last-of-type{
+  margin-bottom:0;
+}
+.dashboard-v2 .content{
+  padding-bottom:96px;
+}
+.dashboard-control-simple .export-report-btn{
+  padding:9px 11px;
+  font-size:9px;
+}
+.dashboard-control-simple .export-report-btn svg{
+  width:14px;
+  height:14px;
+}
+.dashboard-v2 .revenue-wide strong{
+  font-size:17px;
+}
+@media(max-width:360px){
+  .dashboard-v2 .compact-status-card{
+    min-height:78px;
+    padding:11px;
+  }
+  .dashboard-v2 .compact-status-card small{
+    font-size:8px;
+  }
+}

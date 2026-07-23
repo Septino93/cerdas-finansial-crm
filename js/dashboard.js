@@ -166,7 +166,7 @@ async function initDashboard(){
     document.getElementById('statConsultations').textContent=d.consultations.length;
     document.getElementById('statPaid').textContent=paidPayments.length;
     document.getElementById('statPayments').textContent=pendingCount;
-    document.getElementById('statRevenue').textContent=rupiah(monthlyRevenue);
+    document.getElementById('statRevenue').textContent=rupiah(monthlyRevenue).replace('Rp','Rp ');
     document.getElementById('lastUpdated').textContent=`Diperbarui ${new Intl.DateTimeFormat('id-ID',{timeZone:DASHBOARD_TZ,hour:'2-digit',minute:'2-digit'}).format(now)} WIB`;
 
     renderStatusSummary(d.consultations);
