@@ -344,8 +344,6 @@ function toggleMarriageFields(){
     document.getElementById("statusPasangan").value = "kerja";
     document.getElementById("jumlahAnak").value = "0";
     ["namaPasangan", "tglLahirPasangan", "statusPasangan", "jumlahAnak"].forEach(id => setInvalid(document.getElementById(id), false));
-  }else if(document.getElementById("jumlahAnak").value === "0"){
-    document.getElementById("jumlahAnak").value = "3";
   }
 
   renderChildNameInputs();
@@ -422,7 +420,7 @@ function fillFamilyForm(){
   }
   document.getElementById("statusMenikah").value = state.statusMenikah || "menikah";
   document.getElementById("statusPasangan").value = state.statusPasangan || "kerja";
-  document.getElementById("jumlahAnak").value = anakCount || 3;
+  document.getElementById("jumlahAnak").value = String(anakCount);
   toggleMarriageFields();
   renderChildNameInputs();
 }
@@ -854,7 +852,7 @@ function resetReview(){
   document.getElementById("namaPasangan").value = "";
   document.getElementById("tglLahirPasangan").value = "";
   document.getElementById("statusPasangan").value = "kerja";
-  document.getElementById("jumlahAnak").value = "3";
+  document.getElementById("jumlahAnak").value = "0";
   const childrenBox = document.getElementById("childrenNameBox");
   if(childrenBox) childrenBox.innerHTML = "";
   toggleMarriageFields();
