@@ -4,5 +4,5 @@ window.CF_CONFIG = Object.freeze({
 
   // Isi dengan Web App URL Google Apps Script Kuisioner yang berakhiran /exec.
   // Tidak perlu ditambahkan ke Environment Variables Vercel.
-  medicalHistoryApiUrl: 'PASTE_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE'
+  medicalHistoryApiUrl: 'https://script.google.com/macros/s/AKfycbxYfyzp0Rdhsq9DQq3QVFFA_htXl1VDLTIHO59_eSyxgN3d-rj7im6g26vMraSLfvGh/exec'
 });
