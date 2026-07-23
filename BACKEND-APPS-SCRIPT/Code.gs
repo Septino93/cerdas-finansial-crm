@@ -919,3 +919,29 @@ function deleteData_(request) {
   };
 }
 
+
+/**
+ * Jalankan SATU KALI dari editor Apps Script setelah mengganti Code.gs dan
+ * appsscript.json. Fungsi ini memunculkan permintaan izin external request
+ * yang dibutuhkan untuk memverifikasi sesi admin CRM ke Supabase.
+ */
+function authorizeCrmIntegration() {
+  const baseUrl = String(CONFIG.CRM_SUPABASE_URL || "").replace(/\/$/, "");
+  if (!baseUrl || !CONFIG.CRM_SUPABASE_ANON_KEY) {
+    throw new Error("Konfigurasi Supabase CRM belum lengkap.");
+  }
+
+  const response = UrlFetchApp.fetch(baseUrl + "/auth/v1/health", {
+    method: "get",
+    headers: { apikey: CONFIG.CRM_SUPABASE_ANON_KEY },
+    muteHttpExceptions: true
+  });
+
+  const code = response.getResponseCode();
+  if (code < 200 || code >= 500) {
+    throw new Error("Koneksi Supabase gagal. HTTP " + code);
+  }
+
+  Logger.log("Izin CRM berhasil. HTTP " + code);
+  return "Izin CRM berhasil. Silakan deploy versi baru.";
+}
